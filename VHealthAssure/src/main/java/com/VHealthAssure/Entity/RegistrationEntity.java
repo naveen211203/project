@@ -31,8 +31,10 @@ public class RegistrationEntity {
     // Employment / Financial
     private String EmploymentStatus;
     private double AnnualIncome;
+    private String Occupation;
+    private String Company;
 
-    // Security & System
+	// Security & System
     private boolean EmailVerified;
     private boolean MobileVerified;
     private String KycStatus;
@@ -166,6 +168,18 @@ public class RegistrationEntity {
 	}
 	public void setAnnualIncome(double annualIncome) {
 		AnnualIncome = annualIncome;
+	}
+	public String getOccupation() {
+		return Occupation;
+	}
+	public void setOccupation(String occupation) {
+		Occupation = occupation;
+	}
+	public String getCompany() {
+		return Company;
+	}
+	public void setCompany(String company) {
+		Company = company;
 	}
 	public boolean isEmailVerified() {
 		return EmailVerified;

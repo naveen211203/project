@@ -310,7 +310,7 @@ footer{
     <div class="profile-name"><%= userName %></div>
 
     <div class="profile-dropdown">
-      <a href="MyProfile.jsp">My Profile</a>
+      <a href="MyProfile">My Profile</a>
       <a href="ChangePassword.jsp">Change Password</a>
       <a href="logout" class="logout">Logout</a>
     </div>

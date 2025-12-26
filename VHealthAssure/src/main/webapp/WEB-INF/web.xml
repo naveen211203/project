@@ -28,6 +28,12 @@
   	<description></description>
   	<servlet-class>com.VHealthAssure.Controller.ChangePasswordServlet</servlet-class>
   </servlet>
+  <servlet>
+  	<servlet-name>MyProfileServlet</servlet-name>
+  	<display-name>MyProfileServlet</display-name>
+  	<description></description>
+  	<servlet-class>com.VHealthAssure.Controller.MyProfileServlet</servlet-class>
+  </servlet>
   <servlet-mapping>
   	<servlet-name>RegistrationServlet</servlet-name>
   	<url-pattern>/RegistrationServlet</url-pattern>
@@ -43,5 +49,9 @@
   <servlet-mapping>
   	<servlet-name>ChangePasswordServlet</servlet-name>
   	<url-pattern>/ChangePasswordServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>MyProfileServlet</servlet-name>
+  	<url-pattern>/MyProfileServlet</url-pattern>
   </servlet-mapping>
 </web-app>

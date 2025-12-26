@@ -6,9 +6,9 @@ String userName =
 (String) session.getAttribute("userName");
 
 if (userName == null) {
-   userName = "User";
+    response.sendRedirect("login.html");
+    return;
 }
-
 %>
 
 <!DOCTYPE html>
@@ -230,7 +230,7 @@ main{padding:28px;overflow-y:auto}
     <div class="profile-name"><%= userName %></div>
 
     <div class="profile-dropdown">
-      <a href="MyProfile.jsp">My Profile</a>
+      <a href="MyProfile">My Profile</a>
       <a href="ChangePassword.jsp">Change Password</a>
       <a href="logout" class="logout">Logout</a>
     </div>
