@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  
+  <title>User Registration Page</title>
+
+  <style>
+    :root{
+      --bg: #f3f6fb;
+      --card: #ffffff;
+      --accent: #1769ff;
+      --accent-2: #2fa6ff;
+      --muted: #6b7280;
+      --field-bg: #fbfdff;
+      --border: #b7d0fb;
+      --border-strong: #7fb8ff;
+      --label-w: 210px;
+      --slow: 320ms;
+      font-family: "Poppins", system-ui, sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: var(--bg);
+      color: #0b1220;
+    }
+
+    .wrap {
+      max-width: 800px;
+      margin: 36px auto;
+      padding: 20px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+    .brand { display:flex; gap:14px; align-items:center; }
+    .logo {
+      width:64px;
+      height:64px;
+      border-radius:14px;
+      background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      font-weight:800;
+      font-size:20px;
+      box-shadow:0 8px 30px rgba(23,105,255,0.12);
+    }
+    .logo-img {
+      width:100%;
+      height:100%;
+      border-radius:14px;
+      object-fit:cover;
+    }
+    .head-text h1 { margin:0; font-size:32px; color:#003366; }
+    .head-text p { margin:3px 0 0 0; color:var(--muted); font-size:13px; }
+
+    /* Card */
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 12px 40px rgba(12,30,60,0.06);
+      border: 1px solid rgba(17,24,39,0.03);
+      overflow: hidden;
+    }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform: translateY(14px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    .section {
+      animation: fadeUp var(--slow) both;
+      margin-bottom: 18px;
+      padding: 16px;
+      border-radius: 12px;
+      background: linear-gradient(180deg,#fbfcff,#ffffff);
+      border: 1px solid rgba(17,24,39,0.03);
+      transition: box-shadow var(--slow), transform var(--slow);
+    }
+    .section:hover { box-shadow:0 18px 50px rgba(23,105,255,0.06); transform: translateY(-4px); }
+
+    .section h2 { margin:0 0 12px 0; font-size:22px; font-weight:800; color:#003366; }
+
+    .grid {
+      display:grid;
+      grid-template-columns: var(--label-w) minmax(300px, 1fr);
+      gap:12px 22px;
+      align-items:center;
+    }
+   
+	#password::placeholder {
+      font-size: 12.5px;   
+      color: #9aa4b2;    
+	}
+    @media (max-width: 600px) {
+      #password::placeholder {
+        font-size: 11px;
+      }
+	}
+    
+
+    .field-label { font-weight:750; color:#2e3a4e; font-size:14px; }
+    .field { display:flex; align-items:center; gap:10px; }
+    .leading {
+      width:44px; height:44px; border-radius:10px; background:var(--field-bg);
+      display:flex; align-items:center; justify-content:center; border:2px solid var(--border);
+      color:var(--muted); font-size:18px; transition: var(--slow); flex-shrink:0;
+    }
+
+    input, select {
+      flex:1;
+      padding:12px;
+      background:var(--field-bg);
+      border-radius:10px;
+      border:2px solid var(--border);
+      font-size:15px;
+      transition: var(--slow);
+      max-width:420px;
+      box-sizing: border-box;
+    }
+
+    .grid > .field > input,
+    .grid > .field > select { width:100%; }
+
+    input:hover, select:hover { border-color: var(--border-strong); }
+    input:focus, select:focus {
+      outline:none;
+      border-color: #003366;
+      box-shadow:0 10px 26px rgba(23,105,255,0.2);
+      transform:translateY(-1px);
+    }
+
+    .pw-wrap { position:relative; flex:1; }
+    .pw-wrap input { width:100%; padding-right:64px; }
+    .pw-show {
+      position:absolute; right:12px; top:50%; transform:translateY(-50%);
+      background:none; border:none; cursor:pointer; color:var(--muted);
+      font-weight:700; padding:6px; border-radius:8px;
+    }
+    .pw-show:hover { background: rgba(0,0,0,0.03); }
+
+    .checkbox-row { display:flex; gap:10px; align-items:center; margin-top:8px; margin-bottom:6px; }
+    .checkbox-row input[type="checkbox"] { width:18px; height:18px; accent-color: var(--accent); }
+
+    .actions { display:flex; gap:12px; justify-content:flex-end; margin-top:10px; }
+    .btn { padding:12px 20px; border-radius:10px; font-weight:800; cursor:pointer; border:none; transition:var(--slow); }
+    .btn.primary{ background:#ffb74d; color:black; box-shadow:0 10px 26px rgba(23,105,255,0.15); }
+    .btn.primary:hover { transform:translateY(-3px); box-shadow:0 16px 36px rgba(23,105,255,0.25); }
+
+    /* Toast (top-right) */
+    .toast-wrap {
+      position: fixed;
+      right: 20px;
+      top: 20px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-end;
+    }
+    .toast {
+      min-width: 260px;
+      max-width: 420px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      box-shadow: 0 8px 30px rgba(12,30,60,0.12);
+      color: #fff;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      font-weight:600;
+      animation: slideIn .25s ease;
+    }
+    .toast.error { background: linear-gradient(90deg,#ff4d4f,#ff6b6b); }
+    .toast.success { background: linear-gradient(90deg,#28c76f,#12b886); }
+    .toast button.close {
+      background:transparent; border:none; color:rgba(255,255,255,0.9); font-weight:700;
+      cursor:pointer; padding:6px; border-radius:6px;
+    }
+    @keyframes slideIn { from { transform: translateY(-8px); opacity:0 } to { transform: translateY(0); opacity:1 } }
+
+    @media(max-width:940px){ :root{ --label-w:160px; } }
+    @media(max-width:550px){
+      .grid{ grid-template-columns:1fr; }
+      .actions{ flex-direction:column-reverse; align-items:stretch; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div class="brand">
+        <div class="logo">
+          <img src="images/logo.jpg" alt="Insurance Logo" class="logo-img">
+        </div>
+        <div class="head-text">
+          <h1>New User Registration</h1>
+          <p>Register to manage policies, claims, KYC and more.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <!-- keep novalidate so browser native popups won't appear; we show toast messages on submit -->
+      <form id="regForm" action="RegistrationServlet" method="post" novalidate onsubmit="return ensureTermsChecked()">
+
+        <!-- PERSONAL DETAILS -->
+        <div class="section" style="animation-delay:40ms">
+          <h2>Personal Details</h2>
+          <div class="grid">
+            <div class="field-label">Full Name <span style="color: red;">*</span>
+		    </div>
+            <div class="field">
+              <div class="leading">👤</div>
+              <input type="text" id="FullName" name="FullName" placeholder="E.g. Ravi Kumar" required pattern="[A-Za-z ]+" title="Only letters and spaces allowed" />
+            </div>
+
+            <div class="field-label">Email <span style="color: red;">*</span></div>
+            <div class="field">
+              <div class="leading">✉</div>
+              <input type="email" id="Email" name="Email" placeholder="you@example.com" required/>
+            </div>
+
+            <div class="field-label">Mobile <span style="color: red;">*</span></div>
+            <div class="field">
+              <div class="leading">📞</div>
+              <input type="text" name="Mobile" placeholder="10 digits" required/>
+            </div>
+
+            <div class="field-label">Password <span style="color: red;">*</span></div>
+            <div class="field">
+              <div class="leading">🔒</div>
+              <div class="pw-wrap">
+                <input id="password" type="password" name="Password" placeholder="Include uppercase, lowercase, numbers & special characters" required/>
+                <button type="button" class="pw-show" onclick="togglePassword()">Show</button>
+              </div>
+            </div>
+
+            <div class="field-label">Date of Birth <span style="color: red;">*</span></div>
+            <div class="field">
+              <div class="leading">📅</div>
+              <input type="date" id="DateOfBirth" name="DateOfBirth" required/>
+            </div>
+
+            <div class="field-label">Gender <span style="color: red;">*</span></div>
+            <div class="field">
+              <div class="leading">⚧</div>
+              <select name="Gender" required>
+                <option value="">Select</option>
+                <option value="MALE">Male</option>
+                <option value="FEMALE">Female</option>
+                <option value="OTHER">Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- KYC -->
+        <div class="section">
+          <h2>KYC / Identity</h2>
+          <div class="grid">
+            <div class="field-label">ID Type <span style="color: red;">*</span></div>
+            <div class="field">
+              <div class="leading">🪪</div>
+              <select name="GovIdType" id="GovIdType" required>
+                <option value="">Select</option>
+                <option value="AADHAAR">Aadhaar Card</option>
+                <option value="PAN">PAN Card</option>
+                <option value="DL">Driving License</option>
+                <option value="VOTER">Voter ID</option>
+              </select>
+            </div>
+
+            <div class="field-label">ID Number <span style="color: red;">*</span></div>
+            <div class="field">
+              <div class="leading">🔢</div>
+              <input type="text" id="GovIdNumber" name="GovIdNumber" placeholder="Enter Govt ID number" required />
+            </div>
+          </div>
+        </div>
+
+        <!-- ADDRESS -->
+        <div class="section" style="animation-delay:120ms">
+          <h2>Address</h2>
+          <div class="grid">
+            <div class="field-label">Address Line 1 <span style="color: red;">*</span></div>
+            <div class="field">
+              <div class="leading">🏠</div>
+              <input type="text" name="AddressLine1" placeholder="Street, house no." required/>
+            </div>
+
+            <div class="field-label">Address Line 2</div>
+            <div class="field">
+              <div class="leading">📍</div>
+              <input type="text" name="AddressLine2"/>
+            </div>
+
+            <div class="field-label">City <span style="color: red;">*</span></div>
+            <div class="field">
+              <div class="leading">🏙</div>
+              <input type="text" name="City" required/>
+            </div>
+
+            <div class="field-label">State <span style="color: red;">*</span></div>
+            <div class="field">
+              <div class="leading">🗺</div>
+              <input type="text" name="State" required/>
+            </div>
+
+            <div class="field-label">Postal Code <span style="color: red;">*</span></div>
+            <div class="field">
+              <div class="leading">🏷</div>
+              <input type="text" name="PostalCode" required/>
+            </div>
+
+            <div class="field-label">Country <span style="color: red;">*</span></div>
+            <div class="field">
+              <div class="leading">🌍</div>
+              <input type="text" name="Country" required/>
+            </div>
+          </div>
+        </div>
+
+        <!-- NOMINEE -->
+        <div class="section" style="animation-delay:160ms">
+          <h2>Nominee</h2>
+          <div class="grid">
+            <div class="field-label">Nominee Name</div>
+            <div class="field">
+              <div class="leading">🧑‍🤝‍🧑</div>
+              <input type="text" id="NomineeName" name="NomineeName"/>
+            </div>
+
+            <div class="field-label">Relation</div>
+            <div class="field">
+              <div class="leading">🔗</div>
+              <input type="text" id="NomineeRelation" name="NomineeRelation"/>
+            </div>
+
+            <div class="field-label">Nominee DOB</div>
+            <div class="field">
+              <div class="leading">📅</div>
+              <input type="date" id="NomineeDob" name="NomineeDob"/>
+            </div>
+
+            <div class="field-label">Share (%)</div>
+            <div class="field">
+              <div class="leading">📊</div>
+              <input type="number" id="NomineeShare" name="NomineeShare" value="100" min="0" max="100" step="0.01"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- EMPLOYMENT -->
+        <div class="section" style="animation-delay:200ms">
+          <h2>Employment</h2>
+          <div class="grid">
+            <div class="field-label">Employment Status</div>
+            <div class="field">
+              <div class="leading">💼</div>
+              <select name="EmploymentStatus">
+                <option value="">Select</option>
+                <option value="SALARIED">Salaried</option>
+                <option value="SELF_EMPLOYED">Self Employed</option>
+                <option value="UNEMPLOYED">Unemployed</option>
+                <option value="RETIRED">Retired</option>
+              </select>
+            </div>
+
+            <div class="field-label">Annual Income</div>
+            <div class="field">
+              <div class="leading">💰</div>
+              <input type="number" name="AnnualIncome" step="0.01"/>
+            </div>
+          </div>
+
+          <!-- hidden backend fields -->
+          <input type="hidden" name="EmailVerified" value="false"/>
+          <input type="hidden" name="MobileVerified" value="false"/>
+          <input type="hidden" name="KycStatus" value="PENDING"/>
+          <input type="hidden" name="Role" value="USER"/>
+          <input type="hidden" name="Status" value="ACTIVE"/>
+          <input type="hidden" name="action" value="register"/>
+        </div>
+
+        <!-- Terms & submit -->
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;margin-top:8px;">
+          <div>
+            <label class="checkbox-row">
+              <input id="terms" type="checkbox" name="terms" required />
+              <span style="color:var(--muted);font-size:13px;">I agree to the <a href="#" style="color:#003366;text-decoration:none;">Terms & Conditions</a></span>
+            </label>
+          </div>
+
+          <div class="actions">
+            <button class="btn primary" type="submit">Register</button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- toast container (top-right) -->
+  <div class="toast-wrap" id="toastWrap" aria-live="polite" aria-atomic="true"></div>
+
+  <script>
+    // Toggle password visibility
+    function togglePassword() {
+      const p = document.getElementById("password");
+      const btn = document.querySelector(".pw-show");
+      if (!p || !btn) return;
+      if (p.type === "password") { p.type = "text"; btn.textContent = "Hide"; }
+      else { p.type = "password"; btn.textContent = "Show"; }
+    }
+
+    // Full name: allow only letters & spaces
+    (function() {
+      const el = document.getElementById("FullName");
+      if (!el) return;
+      el.addEventListener("input", function () {
+        this.value = this.value.replace(/[^A-Za-z ]/g, "");
+      });
+    })();
+
+    // Email input: restrict characters (keep '@' mandatory at submit-time)
+    (function() {
+      const el = document.getElementById("Email");
+      if (!el) return;
+      el.addEventListener("input", function () {
+        let v = this.value;
+        v = v.replace(/[^A-Za-z0-9@.]/g, "");
+        const parts = v.split("@");
+        if (parts.length > 2) v = parts[0] + "@" + parts[1];
+        if (!/[A-Za-z]/.test(v)) v = v.replace(/[0-9]/g, "");
+        this.value = v;
+      });
+    })();
+
+    // Nominee name & relation: alphabets & spaces only (real-time)
+    (function() {
+      const nomineeName = document.getElementById('NomineeName');
+      const nomineeRel = document.getElementById('NomineeRelation');
+      [nomineeName, nomineeRel].forEach(field => {
+        if (!field) return;
+        field.addEventListener('input', function() {
+          this.value = this.value.replace(/[^A-Za-z ]/g, "");
+        });
+      });
+    })();
+
+    // KYC: Gov ID input formatting and auto-jump behavior
+    (function() {
+      const idType = document.getElementById("GovIdType");
+      const idInput = document.getElementById("GovIdNumber");
+      if (!idType || !idInput) return;
+
+      idInput.addEventListener("input", function () {
+        let v = this.value.toUpperCase();
+
+        if (idType.value === "AADHAAR") {
+          v = v.replace(/[^0-9]/g, "");
+          if (v.length === 12) autoJump(idInput);
+          this.maxLength = 12;
+        } else if (idType.value === "PAN") {
+          v = v.replace(/[^A-Z0-9]/g, "");
+          if (v.length === 10) autoJump(idInput);
+          this.maxLength = 10;
+        } else if (idType.value === "DL") {
+          v = v.replace(/[^A-Z0-9]/g, "");
+          if (v.length === 16) autoJump(idInput);
+          this.maxLength = 16;
+        } else if (idType.value === "VOTER") {
+          v = v.replace(/[^A-Z0-9]/g, "");
+          if (v.length === 10) autoJump(idInput);
+          this.maxLength = 10;
+        } else {
+          this.maxLength = 255;
+        }
+
+        this.value = v;
+      });
+
+      idType.addEventListener("change", () => {
+        idInput.value = "";
+        idInput.focus();
+      });
+    })();
+
+    // Auto-jump helper (moves focus to next input/select)
+    function autoJump(currentEl) {
+      const fields = Array.from(document.querySelectorAll("input, select"));
+      const idx = fields.indexOf(currentEl);
+      if (idx !== -1 && fields[idx + 1]) fields[idx + 1].focus();
+    }
+
+    // City/State/Country — alphabets & spaces only
+    (function() {
+      const alphaFields = [
+        document.querySelector('input[name="City"]'),
+        document.querySelector('input[name="State"]'),
+        document.querySelector('input[name="Country"]')
+      ];
+      alphaFields.forEach(field => {
+        if (!field) return;
+        field.addEventListener("input", function () {
+          this.value = this.value.replace(/[^A-Za-z ]/g, "");
+        });
+      });
+    })();
+
+    // Mobile and Postal behavior (auto-trim digits & auto-jump)
+    (function() {
+      const mobile = document.querySelector('input[name="Mobile"]');
+      if (mobile) {
+        mobile.addEventListener('input', function() {
+          const old = this.value;
+          const digitsOnly = old.replace(/\D/g, '');
+          if (old !== digitsOnly) {
+            const pos = Math.max(0, this.selectionStart - (old.length - digitsOnly.length));
+            this.value = digitsOnly;
+            try { this.setSelectionRange(pos, pos); } catch (e) {}
+          }
+          if (digitsOnly.length >= 10) {
+            this.value = digitsOnly.slice(0, 10);
+            autoJump(this);
+          }
+        });
+
+        mobile.addEventListener('keypress', function(e) {
+          const ch = String.fromCharCode(e.which || e.keyCode);
+          if (!/[0-9]/.test(ch)) e.preventDefault();
+        });
+      }
+
+      const postal = document.querySelector('input[name="PostalCode"]');
+      if (postal) {
+        postal.addEventListener('input', function() {
+          const old = this.value;
+          const digitsOnly = old.replace(/\D/g, '').slice(0, 6);
+          if (old !== digitsOnly) {
+            const pos = Math.max(0, this.selectionStart - (old.length - digitsOnly.length));
+            this.value = digitsOnly;
+            try { this.setSelectionRange(pos, pos); } catch (e) {}
+          } else {
+            this.value = digitsOnly;
+          }
+          if (digitsOnly.length === 6) autoJump(this);
+        });
+
+        postal.addEventListener('keypress', function(e) {
+          const ch = String.fromCharCode(e.which || e.keyCode);
+          if (!/[0-9]/.test(ch)) e.preventDefault();
+        });
+      }
+    })();
+
+    // Toast helper
+    function showToast(message, type = 'error', duration = 4000) {
+      const wrap = document.getElementById('toastWrap');
+      if (!wrap) return;
+      const t = document.createElement('div');
+      t.className = 'toast ' + (type === 'success' ? 'success' : 'error');
+      t.innerHTML = `<div style="flex:1">${escapeHtml(message)}</div><button class="close" aria-label="Close">&times;</button>`;
+      wrap.appendChild(t);
+
+      const remove = () => { try { t.remove(); } catch (e) {} };
+      const btn = t.querySelector('button.close');
+      btn.addEventListener('click', remove);
+
+      const timer = setTimeout(() => { remove(); }, duration);
+      t.addEventListener('remove', () => clearTimeout(timer));
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // Limit year-part in date inputs to 4 digits if some browser produces >4-digit year
+    (function () {
+      const dateFields = document.querySelectorAll('input[type="date"]');
+      dateFields.forEach(field => {
+        field.addEventListener("input", function () {
+          let v = this.value;
+          if (/^\d{5,}-\d{2}-\d{2}$/.test(v)) {
+            let parts = v.split("-");
+            parts[0] = parts[0].slice(0, 4);
+            this.value = parts.join("-");
+          }
+        });
+      });
+    })();
+
+    // Age helper
+    function calculateAgeYears(birthDate, referenceDate) {
+      if (!(birthDate instanceof Date) || isNaN(birthDate)) return NaN;
+      const ref = referenceDate || new Date();
+      let age = ref.getFullYear() - birthDate.getFullYear();
+      const m = ref.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && ref.getDate() < birthDate.getDate())) age--;
+      return age;
+    }
+
+    // Main submit-time custom validation: ages, nominee, shares, mobile/postal/gov id
+    function validateAgesOnSubmit() {
+      const dobEl = document.getElementById('DateOfBirth');
+      const nomEl = document.getElementById('NomineeDob');
+      const nameEl = document.getElementById('NomineeName');
+      const relEl = document.getElementById('NomineeRelation');
+      const shareEl = document.getElementById('NomineeShare');
+
+      const now = new Date();
+      const MIN_AGE = 18;
+      const MAX_AGE = 100;
+
+      function parseISODate(val) {
+        if (!val) return null;
+        const d = new Date(val);
+        return isNaN(d) ? null : d;
+      }
+
+      // DateOfBirth required and age range check
+      if (!dobEl || !dobEl.value) {
+        showToast('Please enter Date of Birth.', 'error'); dobEl?.focus(); return false;
+      }
+      const dobDate = parseISODate(dobEl.value);
+      if (!dobDate) { showToast('Invalid Date of Birth.', 'error'); dobEl.focus(); return false; }
+      const age = calculateAgeYears(dobDate, now);
+      if (isNaN(age) || age < MIN_AGE || age > MAX_AGE) {
+        showToast('User must be between 18 and 100 years old.', 'error'); dobEl.focus(); return false;
+      }
+
+      // Nominee logic
+      const nameVal = (nameEl && nameEl.value || '').trim();
+      const relVal = (relEl && relEl.value || '').trim();
+      const dobVal = (nomEl && nomEl.value || '').trim();
+
+      if ((nameVal || relVal) && !dobVal) {
+        showToast('Please enter Nominee DOB when Nominee Name or Relation is provided.', 'error'); nomEl?.focus(); return false;
+      }
+      if (dobVal && (!nameVal || !relVal)) {
+        showToast('Please enter Nominee Name and Relation when entering Nominee DOB.', 'error');
+        if (!nameVal) nameEl?.focus(); else relEl?.focus();
+        return false;
+      }
+      if (dobVal) {
+        const nomDate = parseISODate(dobVal);
+        if (!nomDate) { showToast('Invalid Nominee Date of Birth.', 'error'); nomEl.focus(); return false; }
+        const nomAge = calculateAgeYears(nomDate, now);
+        if (isNaN(nomAge) || nomAge < MIN_AGE || nomAge > MAX_AGE) {
+          showToast('Nominee must be between 18 and 100 years old.', 'error'); nomEl.focus(); return false;
+        }
+      }
+
+      // Nominee share
+      if (shareEl) {
+        const val = parseFloat(shareEl.value || '0');
+        if (!isFinite(val) || val < 0) { showToast('Nominee share must be a valid number.', 'error'); shareEl.focus(); return false; }
+        if (val > 100) { showToast('Nominee share cannot be more than 100.', 'error'); shareEl.focus(); return false; }
+      }
+
+      // Mobile: exactly 10 digits
+      const mobileEl = document.querySelector('input[name="Mobile"]');
+      if (mobileEl) {
+        const mDigits = (mobileEl.value || '').replace(/\D/g, '');
+        if (mDigits.length !== 10) { showToast('Mobile number must be exactly 10 digits.', 'error'); mobileEl.focus(); return false; }
+      }
+
+      // Postal code: exactly 6 digits
+      const postalEl = document.querySelector('input[name="PostalCode"]');
+      if (postalEl) {
+        const pDigits = (postalEl.value || '').replace(/\D/g, '');
+        if (pDigits.length !== 6) { showToast('Postal code must be exactly 6 digits.', 'error'); postalEl.focus(); return false; }
+      }
+
+      // Gov ID number validation
+      const idTypeEl = document.getElementById('GovIdType');
+      const idNumEl = document.getElementById('GovIdNumber');
+      if (idTypeEl && idNumEl) {
+        const type = (idTypeEl.value || '').trim();
+        const raw = (idNumEl.value || '').trim();
+        if (!type) { showToast('Please select an ID Type.', 'error'); idTypeEl.focus(); return false; }
+        if (!raw) { showToast('Please enter ID Number.', 'error'); idNumEl.focus(); return false; }
+
+        if (type === 'AADHAAR') {
+          const digits = raw.replace(/\D/g,'');
+          if (digits.length !== 12) { showToast('Aadhaar must be exactly 12 digits.', 'error'); idNumEl.focus(); return false; }
+        } else if (type === 'PAN') {
+          const v = raw.toUpperCase();
+          if (!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(v)) {
+            showToast('PAN must be 10 characters in the format ABCDE1234F.', 'error'); idNumEl.focus(); return false;
+          }
+        } else if (type === 'DL') {
+          const v = raw.replace(/[^A-Z0-9]/gi,'');
+          if (v.length !== 16) { showToast('Driving License must be 16 alphanumeric characters.', 'error'); idNumEl.focus(); return false; }
+        } else if (type === 'VOTER') {
+          const v = raw.replace(/[^A-Z0-9]/gi,'');
+          if (v.length !== 10) { showToast('Voter ID must be 10 alphanumeric characters.', 'error'); idNumEl.focus(); return false; }
+        }
+      }
+
+      return true;
+    }
+
+    // Submits first checks required fields and then validateAgesOnSubmit
+    function ensureTermsChecked() {
+      const form = document.getElementById('regForm');
+
+      // gather required elements (ignore hidden)
+      const requiredEls = Array.from(form.querySelectorAll('[required]')).filter(el => el.type !== 'hidden');
+
+      const labelMap = {
+        FullName: 'Full Name',
+        Email: 'Email',
+        Mobile: 'Mobile',
+        Password: 'Password',
+        DateOfBirth: 'Date of Birth',
+        Gender: 'Gender',
+        GovIdType: 'ID Type',
+        GovIdNumber: 'ID Number',
+        AddressLine1: 'Address Line 1',
+        City: 'City',
+        State: 'State',
+        PostalCode: 'Postal Code',
+        Country: 'Country',
+        terms: 'Terms & Conditions'
+      };
+
+      for (const el of requiredEls) {
+        if (el.type === 'checkbox') {
+          if (!el.checked) { showToast('Please accept the Terms & Conditions to continue.','error'); el.focus(); return false; }
+          continue;
+        }
+
+        if (el.tagName.toLowerCase() === 'select') {
+          if (!el.value || el.value.trim() === '') {
+            const key = el.id || el.name;
+            const name = labelMap[key] || prettifyKey(key);
+            showToast(`Please select ${name}.`, 'error');
+            el.focus();
+            return false;
+          }
+          continue;
+        }
+
+        const val = (el.value || '').toString().trim();
+        if (!val) {
+          const key = el.id || el.name;
+          const name = labelMap[key] || prettifyKey(key);
+          showToast(`Please enter ${name}.`, 'error');
+          el.focus();
+          return false;
+        }
+      }
+
+      // run custom checks
+      const ok = validateAgesOnSubmit();
+      if (!ok) return false;
+
+      // email must contain '@'
+      const emailEl = document.getElementById('Email');
+      if (emailEl) {
+        const emailVal = (emailEl.value || '').trim();
+        if (emailVal.indexOf('@') === -1) { showToast('Email must contain "@" symbol.', 'error'); emailEl.focus(); return false; }
+      }
+
+      return true;
+    }
+
+    function prettifyKey(k) {
+      if (!k) return 'This field';
+      return k.replace(/([A-Z])/g, ' $1').replace(/_/g,' ').replace(/\b\w/g, ch => ch.toUpperCase()).trim();
+    }
+    window.addEventListener("pageshow", function (event) {
+        const form = document.getElementById("regForm");
+
+        // If page is loaded from cache (Back button), reset fields
+        if (event.persisted) {
+            form.reset();
+        } else {
+            form.reset();
+        }
+    });
+  </script>
+</body>
+</html>

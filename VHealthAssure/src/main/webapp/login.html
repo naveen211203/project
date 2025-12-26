@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | VHealthAssure</title>    
+
+    <style>
+    * {
+        box-sizing: border-box;
+        font-family: "Poppins", system-ui, sans-serif;
+    }
+
+    body {
+        margin: 0;
+        background: #f3f6fb;
+    }
+
+    .login-page {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .login-box {
+        width: 900px;
+        height: 520px;
+        background: #fff;
+        display: flex;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 12px 40px rgba(12,30,60,0.06);
+    }
+
+    .login-image {
+        width: 50%;
+        background: #f4f7fb;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .login-image img {
+        width: 80%;
+    }
+
+    .login-form {
+        width: 50%;
+        padding: 40px;
+    }
+
+    .login-form h2 {
+        margin-bottom: 20px;
+        color: #000;
+    }
+
+    .role-toggle {
+        display: flex;
+        margin-bottom: 20px;
+    }
+
+    .role-toggle button {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        background: #e0e0e0;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .role-toggle button.active {
+        background: #003366;
+        color: #fff;
+    }
+
+    .login-form input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 14px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+    }
+
+    /* PASSWORD WRAP */
+    .pw-wrap {
+    position: relative;
+	}
+
+	.pw-wrap input {
+    	padding-right: 70px;
+	}
+
+	.pw-show {
+    	position: absolute;
+    	right: 14px;
+    	top: 37%;
+    	transform: translateY(-50%);
+    	height: 100%;
+    	display: flex;
+    	align-items: center;
+    	background: none;
+    	border: none;
+    	cursor: pointer;
+    	font-weight: 600;
+    	color: #607d8b;
+	}
+    
+
+    .login-btn {
+        width: 100%;
+        padding: 12px;
+        background: #ffb74d;
+        border: none;
+        font-weight: 700;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: transform .3s ease, box-shadow .3s ease;
+    }
+
+    .login-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 16px 36px rgba(23,105,255,0.25);
+    }
+
+    .social-login {
+        text-align: center;
+        margin-top: 18px;
+    }
+
+    .social-login p {
+        color: #607d8b;
+        font-size: 14px;
+    }
+
+    .social-login img {
+        width: 30px;
+        margin: 0 10px;
+        cursor: pointer;
+    }
+
+    .register {
+        margin-top: 18px;
+        text-align: center;
+    }
+
+    .register a {
+        color: #003366;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    /* TOAST */
+    .toast-wrap {
+        position: fixed;
+        right: 20px;
+        top: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .toast {
+        min-width: 260px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        color: #fff;
+        font-weight: 600;
+        background: linear-gradient(90deg,#ff4d4f,#ff6b6b);
+        box-shadow: 0 8px 30px rgba(12,30,60,0.12);
+        display: flex;
+        justify-content: space-between;
+        animation: slideIn .25s ease;
+    }
+
+    .toast.success {
+        background: linear-gradient(90deg,#28c76f,#12b886);
+    }
+
+    .toast button {
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+    }
+
+    @keyframes slideIn {
+        from { transform: translateY(-8px); opacity: 0; }
+        to   { transform: translateY(0); opacity: 1; }
+    }
+    </style>
+</head>
+
+<body>
+
+<div class="login-page">
+    <div class="login-box">
+
+        <div class="login-image">
+            <img src="images/LoginPagePic.jpg" alt="Login Illustration">
+        </div>
+
+        <div class="login-form">
+            <h2>Welcome to Login</h2>
+
+            <div class="role-toggle">
+                <button id="userBtn" class="active" onclick="setRole('USER')">User</button>
+                <button id="adminBtn" onclick="setRole('ADMIN')">Admin</button>
+            </div>
+
+            <form action="LoginServlet" method="post" id="loginForm" novalidate>
+                <input type="hidden" name="Role" id="role" value="USER">
+
+                <input type="text" id="identifier" name="Identifier" placeholder="Email / Phone">
+
+                <div class="pw-wrap">
+                    <input type="password" id="password" name="Password" placeholder="Password">
+                    <button type="button" class="pw-show" onclick="togglePassword()">Show</button>
+                </div>
+
+                <button type="submit" class="login-btn">Login</button>
+            </form>
+
+            <div class="social-login">
+                <p>Or login with</p>
+                <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png">
+                <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png">
+                <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png">
+            </div>
+
+            <p class="register">
+                Don’t have an account?
+                <a href="Registration.html">Register</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+const identifierInput = document.getElementById("identifier");
+const passwordInput = document.getElementById("password");
+const loginForm = document.getElementById("loginForm");
+
+/* SHOW / HIDE PASSWORD */
+function togglePassword() {
+    const btn = document.querySelector(".pw-show");
+    if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        btn.textContent = "Hide";
+    } else {
+        passwordInput.type = "password";
+        btn.textContent = "Show";
+    }
+}
+
+/* ROLE SWITCH */
+function setRole(role) {
+    document.getElementById("role").value = role;
+    userBtn.classList.remove("active");
+    adminBtn.classList.remove("active");
+    role === "USER" ? userBtn.classList.add("active") : adminBtn.classList.add("active");
+
+    identifierInput.value = "";
+    passwordInput.value = "";
+}
+
+/* TOAST */
+function showToast(message, type = "error") {
+    const wrap = document.getElementById("toastWrap");
+    const toast = document.createElement("div");
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `<span>${message}</span><button>&times;</button>`;
+    wrap.appendChild(toast);
+
+    toast.querySelector("button").onclick = () => toast.remove();
+    setTimeout(() => toast.remove(), 4000);
+}
+
+/* FORM VALIDATION ONLY */
+loginForm.addEventListener("submit", function (e) {
+    if (!identifierInput.value.trim()) {
+        e.preventDefault();
+        showToast("Please enter Email or Mobile number");
+        return;
+    }
+    if (!passwordInput.value.trim()) {
+        e.preventDefault();
+        showToast("Please enter Password");
+        return;
+    }
+});
+
+/* HANDLE BACKEND RESPONSE */
+window.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(location.search);
+
+    if (params.get("success") === "true") {
+        showToast("Welcome Back to VHealth Assure 👋", "success");
+
+        setTimeout(() => {
+            const role = params.get("role");
+            if (role === "ADMIN") {
+                window.location.href = "AdminDashboard.html";
+            } else {
+                window.location.href = "index.jsp";
+            }
+        }, 400);
+    }
+
+    if (params.get("error") === "invalid") {
+        setTimeout(() => {
+            showToast("Invalid credentials. Please try again.");
+        }, 100);
+    }
+
+    history.replaceState({}, document.title, location.pathname);
+});
+
+/* CLEAR ON BACK */
+window.addEventListener("pageshow", () => {
+    identifierInput.value = "";
+    passwordInput.value = "";
+});
+</script>
+
+
+
+</body>
+</html>
