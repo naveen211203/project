@@ -1,4 +1,27 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+response.setHeader("Pragma", "no-cache");
+response.setDateHeader("Expires", 0);
+
+if (session == null || session.getAttribute("loginId") == null) {
+    response.sendRedirect("login.html");
+    return;
+}
+
+String kycStatus = (String) request.getAttribute("kycStatus");
+Integer attempts = (Integer) request.getAttribute("attempts");
+String govIdType = (String) request.getAttribute("govIdType");
+String govIdNumber = (String) request.getAttribute("govIdNumber");
+
+if (kycStatus == null) kycStatus = "NOT VERIFIED";
+if (attempts == null) attempts = 0;
+if (govIdType == null) govIdType = "";
+if (govIdNumber == null) govIdNumber = "";
+
+%>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,14 +60,121 @@ header{
   justify-content:space-between;
   padding:0 32px;
 }
-.brand{display:flex;align-items:center;gap:12px}
-.logo-box{width:42px;height:42px;border-radius:12px;background:#e2e8f0}
-.brand h1{font-size:20px;font-weight:600}
-.profile-area{display:flex;align-items:center;gap:10px}
+
+/* BRAND WITH LOGO */
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.logo-box{
+  width:42px;
+  height:42px;
+  border-radius:12px;              /* rounded-square */
+  background:linear-gradient(145deg,#f8fafc,#e2e8f0);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden; 
+  box-shadow:
+    0 6px 14px rgba(0,0,0,0.25),
+    inset 0 2px z rgba(255,255,255,0.6);
+}
+
+.logo-box img{
+  width:100%;
+  height:100%;
+  object-fit:cover;  /* 🔥 FILL COMPLETELY */
+}
+
+
+.brand h1{
+  font-size:20px;
+  font-weight:600;
+  letter-spacing:.3px;
+}
+
+/* PROFILE */
+.profile-area{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  cursor:pointer;
+  user-select:none;
+}
+
 .profile-avatar{
-  width:38px;height:38px;border-radius:50%;
+  width:38px;
+  height:38px;
+  border-radius:50%;
   background:linear-gradient(135deg,#2563eb,#1e40af);
-  display:flex;align-items:center;justify-content:center;font-weight:600
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:600;
+  font-size:15px;
+  transition:transform .25s ease, box-shadow .25s ease;
+}
+
+.profile-area:hover .profile-avatar{
+  transform:scale(1.05);
+  box-shadow:0 8px 20px rgba(0,0,0,.35);
+}
+
+.profile-name{
+  font-size:14px;
+  opacity:.95;
+}
+
+/* DROPDOWN */
+.profile-dropdown{
+  position:absolute;
+  top:52px;
+  right:0;
+  background:#fff;
+  color:#0f172a;
+  width:210px;
+  border-radius:14px;
+  box-shadow:0 20px 40px rgba(0,0,0,.2);
+  overflow:hidden;
+  transform:translateY(-10px) scale(.95);
+  opacity:0;
+  pointer-events:none;
+  transition:all .25s ease;
+  z-index:100;
+}
+
+.profile-area.active .profile-dropdown{
+  transform:translateY(0) scale(1);
+  opacity:1;
+  pointer-events:auto;
+}
+
+.profile-dropdown a{
+  display:block;
+  padding:14px 18px;
+  text-decoration:none;
+  color:#0f172a;
+  font-size:14px;
+}
+
+.profile-dropdown a:hover{
+  background:#f1f5f9;
+}
+
+.profile-dropdown .logout{
+  color:#c62828;
+  font-weight:600;
+  border-top:1px solid #e5e7eb;
+}
+.profile-area,
+.profile-area:focus,
+.profile-area:active,
+.profile-area:focus-visible {
+  background: transparent !important;
+  outline: none !important;
 }
 
 /* LAYOUT */
@@ -115,6 +245,30 @@ main{
 .status-strip strong{
   color:var(--warn);
   font-size:14px;
+}
+/* STATUS STRIP VARIANTS */
+.status-not-verified{
+  background:#eff6ff;
+  border-left-color:#2563eb;
+}
+.status-not-verified strong{
+  color:#2563eb;
+}
+
+.status-pending{
+  background:#fff7ed;
+  border-left-color:#f59e0b;
+}
+.status-pending strong{
+  color:#f59e0b;
+}
+
+.status-rejected{
+  background:#fef2f2;
+  border-left-color:#dc2626;
+}
+.status-rejected strong{
+  color:#dc2626;
 }
 
 /* INFO */
@@ -312,12 +466,21 @@ main{
 
 <header>
   <div class="brand">
-    <div class="logo-box"></div>
+    <div class="logo-box">
+      <img src="images/logo.jpg" alt="VHealthAssure Logo">
+    </div>
     <h1>VHealthAssure</h1>
   </div>
-  <div class="profile-area">
-    <div class="profile-avatar">U</div>
-    <span>User</span>
+
+  <div class="profile-area" id="profileArea">
+    <div class="profile-avatar">H</div>
+    <div class="profile-name"><%= request.getAttribute("fullName") %></div>
+
+    <div class="profile-dropdown">
+      <a href="MyProfile">My Profile</a>
+      <a href="ChangePassword.jsp">Change Password</a>
+      <a href="logout" class="logout">Logout</a>
+    </div>
   </div>
 </header>
 
@@ -338,21 +501,85 @@ main{
 <div class="kyc-container">
 
   <div class="kyc-title">Identity Verification</div>
-  <div class="kyc-sub">Verification required to activate full services</div>
+  <%-- KYC SUB TITLE --%>
+<div class="kyc-sub">
+  <% if ("NOT VERIFIED".equals(kycStatus)) { %>
+    Verification required to activate full services
+  <% } else if ("PENDING".equals(kycStatus)) { %>
+    Your documents are being reviewed
+  <% } else if ("REJECTED".equals(kycStatus) && attempts < 3) { %>
+    Verification failed – please reupload valid documents
+  <% } else if ("REJECTED".equals(kycStatus) && attempts >= 3) { %>
+    Verification locked due to multiple failed attempts
+  <% } else if ("VERIFIED".equals(kycStatus)) { %>
+    Your identity has been successfully verified
+  <% } %>
+</div>
 
-  <div class="status-strip">
-    <span>Your account is not verified</span>
-    <strong>NOT VERIFIED</strong>
-  </div>
+<%
+boolean showStrip =
+    "NOT VERIFIED".equals(kycStatus) ||
+    "PENDING".equals(kycStatus) ||
+    ("REJECTED".equals(kycStatus) && attempts <= 3);
+%>
 
+<%-- STATUS STRIP --%>
+<%
+String stripClass = "";
+
+if ("NOT VERIFIED".equals(kycStatus)) {
+  stripClass = "status-not-verified";
+} else if ("PENDING".equals(kycStatus)) {
+  stripClass = "status-pending";
+} else if ("REJECTED".equals(kycStatus)) {
+  stripClass = "status-rejected";
+}
+%>
+
+<% if (showStrip) { %>
+<div class="status-strip <%= stripClass %>">
+  <span>
+    <% if ("NOT VERIFIED".equals(kycStatus)) { %>
+      KYC not submitted
+    <% } else if ("PENDING".equals(kycStatus)) { %>
+      Verification in progress
+    <% } else if ("REJECTED".equals(kycStatus) && attempts<3) { %>
+      KYC rejected – you may reapply
+    <% } else if ("REJECTED".equals(kycStatus) && attempts>=3) { %>
+      KYC rejected multiple times
+    <% } %>
+  </span>
+  <strong><%= kycStatus %></strong>
+</div>
+<% } %>
+
+
+<%-- INSTRUCTIONS (ALWAYS SHOWN) --%>
+<div class="instructions">
+  <% if ("NOT VERIFIED".equals(kycStatus)) { %>
+    Please upload a clear copy of your government-issued ID to start verification.
+  <% } else if ("PENDING".equals(kycStatus)) { %>
+    Your document has already been uploaded and is currently under verification.
+  <% } else if ("REJECTED".equals(kycStatus) && attempts < 3) { %>
+    Your previous submission was rejected. Please upload a valid document again.
+  <% } else if ("REJECTED".equals(kycStatus) && attempts >= 3) { %>
+    ❌ Maximum KYC attempts exceeded. Please contact support for assistance.
+  <% } else if ("VERIFIED".equals(kycStatus)) { %>
+    ✅ Your KYC has been verified successfully. You now have full access.
+  <% } %>
+</div>
+  
+  
+<% if ("NOT VERIFIED".equals(kycStatus) ||
+       ("REJECTED".equals(kycStatus) && attempts < 3)) { %>
   <div class="info">
     <div class="info-row">
       <span class="label">Government ID</span>
-      <span class="value">Aadhaar</span>
+      <span class="value"><%= govIdType %></span>
     </div>
     <div class="info-row">
       <span class="label">ID Number</span>
-      <span class="value">XXXX-XXXX-1234</span>
+      <span class="value"><%= govIdNumber %></span>
     </div>
   </div>
 
@@ -364,21 +591,33 @@ main{
     • Do not upload expired or masked documents<br>
     • Uploaded document must match the Government ID type and ID number.
   </div>
+  
+<form action="UploadKyc" method="post" enctype="multipart/form-data">
+<input type="hidden" name="GovIdType" value="<%= govIdType %>">
+<input type="hidden" name="GovIdNumber" value="<%= govIdNumber %>">
+
 
   <div class="upload-box">
-  	<div class="upload-icon">📄</div>
-  	<div class="upload-title">Upload your Government ID</div>
-  	<div class="upload-desc">Drag & drop your document here or click to browse</div>
-  	<label class="upload-btn">
-  	Choose File
-    	<input type="file" accept=".pdf,.jpg,.jpeg,.png" id="kycFile">
- 	 </label>
- 	<div class="upload-note">PDF, JPG or PNG • Max size 5 MB</div>
+    <div class="upload-icon">📄</div>
+    <div class="upload-title">Upload your Government ID</div>
+    <div class="upload-desc">Drag & drop your document here or click to browse</div>
+
+    <label class="upload-btn">
+      Choose File
+      <input type="file"
+             name="kycFile"
+             accept=".pdf,.jpg,.jpeg,.png"
+             id="kycFile"
+             required>
+    </label>
+
+    <div class="upload-note">PDF, JPG or PNG • Max size 5 MB</div>
+    
+    
   </div>
 
-
   <div class="declaration">
-    <input type="checkbox" id="declare">
+    <input type="checkbox" id="declare" required>
     <label for="declare">
       I hereby declare that the document uploaded is genuine and belongs to me.
       I understand that providing false information may result in rejection of my account.
@@ -386,8 +625,12 @@ main{
   </div>
 
   <div class="action">
-    <button class="btn">Submit for Verification</button>
+    <button class="btn" type="submit">Submit for Verification</button>
   </div>
+
+</form>
+
+<% } %>
 
 </div>
 
@@ -395,49 +638,131 @@ main{
 </div>
 
 <script>
-const fileInput = document.getElementById("kycFile");
-const uploadBox = document.querySelector(".upload-box");
+/* ===============================
+   PROFILE DROPDOWN
+================================ */
+document.addEventListener("DOMContentLoaded", () => {
+  const profileArea = document.getElementById("profileArea");
 
-fileInput.addEventListener("change", function () {
-  if (!this.files || !this.files[0]) return;
+  if (profileArea) {
+    profileArea.addEventListener("click", function () {
+      this.classList.toggle("active");
+    });
 
-  const file = this.files[0];
-  const fileName = file.name;
-
-  // Show uploaded state with remove option
-  uploadBox.innerHTML = `
-    <div class="upload-success">
-      ✅ Document uploaded successfully
-    </div>
-    <div class="upload-file">
-      ${fileName}
-    </div>
-    <button class="remove-file" id="removeFile">Remove file</button>
-  `;
-
-  uploadBox.classList.add("uploaded");
-
-  // Remove file logic
-  document.getElementById("removeFile").addEventListener("click", () => {
-    fileInput.value = "";
-    uploadBox.classList.remove("uploaded");
-
-    // Restore original upload UI
-    uploadBox.innerHTML = `
-      <div class="upload-icon">📄</div>
-      <div class="upload-title">Upload your Government ID</div>
-      <div class="upload-desc">Drag & drop your document here or click to browse</div>
-      <label class="upload-btn">
-        Choose File
-        <input type="file" accept=".pdf,.jpg,.jpeg,.png" id="kycFile">
-      </label>
-      <div class="upload-note">PDF, JPG or PNG • Max size 5 MB</div>
-    `;
-
-    // Re-bind input after DOM reset
-    document.getElementById("kycFile").addEventListener("change", arguments.callee);
-  });
+    document.addEventListener("click", function (e) {
+      if (!profileArea.contains(e.target)) {
+        profileArea.classList.remove("active");
+      }
+    });
+  }
 });
+
+
+/* ===============================
+   KYC FILE UPLOAD HANDLER
+   (SAFE – DOES NOT BREAK INPUT)
+================================ */
+document.addEventListener("DOMContentLoaded", () => {
+
+  const fileInput = document.getElementById("kycFile");
+  const uploadBox = document.querySelector(".upload-box");
+
+  if (!fileInput || !uploadBox) return;
+
+  // Grab existing elements (DO NOT REMOVE THEM)
+  const icon = uploadBox.querySelector(".upload-icon");
+  const title = uploadBox.querySelector(".upload-title");
+  const desc  = uploadBox.querySelector(".upload-desc");
+  const btn   = uploadBox.querySelector(".upload-btn");
+  const note  = uploadBox.querySelector(".upload-note");
+
+  // Create uploaded state elements (once)
+  const successText = document.createElement("div");
+  successText.className = "upload-success";
+  successText.textContent = "✅ Document uploaded";
+
+  const fileNameDiv = document.createElement("div");
+  fileNameDiv.className = "upload-file";
+
+  const removeBtn = document.createElement("button");
+  removeBtn.type = "button";
+  removeBtn.className = "remove-file";
+  removeBtn.textContent = "✖";
+
+  const fileRow = document.createElement("div");
+  fileRow.style.display = "flex";
+  fileRow.style.alignItems = "center";
+  fileRow.style.gap = "8px";
+
+  fileRow.appendChild(fileNameDiv);
+  fileRow.appendChild(removeBtn);
+
+  successText.style.display = "none";
+  fileRow.style.display = "none";
+
+  uploadBox.appendChild(successText);
+  uploadBox.appendChild(fileRow);
+
+  /* =========================
+     FILE SELECT
+  ========================== */
+  fileInput.addEventListener("change", function () {
+    if (!this.files || !this.files[0]) return;
+
+    const file = this.files[0];
+
+    // Hide original UI
+    icon.style.display = "none";
+    title.style.display = "none";
+    desc.style.display  = "none";
+    btn.style.display   = "none";
+    note.style.display  = "none";
+
+    // Show uploaded UI
+    successText.style.display = "block";
+    fileRow.style.display = "flex";
+    fileNameDiv.textContent = file.name;
+
+    uploadBox.classList.add("uploaded");
+  });
+
+  /* =========================
+     REMOVE FILE
+  ========================== */
+  removeBtn.addEventListener("click", () => {
+    fileInput.value = "";
+
+    // Restore original UI
+    icon.style.display = "";
+    title.style.display = "";
+    desc.style.display  = "";
+    btn.style.display   = "";
+    note.style.display  = "";
+
+    // Hide uploaded UI
+    successText.style.display = "none";
+    fileRow.style.display = "none";
+    fileNameDiv.textContent = "";
+
+    uploadBox.classList.remove("uploaded");
+  });
+
+});
+(function () {
+	  if (window.history && window.history.pushState) {
+	    window.history.pushState(null, null, document.URL);
+	    window.addEventListener('popstate', function () {
+	      window.history.pushState(null, null, document.URL);
+	    });
+	  }
+	})();
+window.addEventListener("pageshow", function (event) {
+	  if (event.persisted) {
+	    // Page was restored from BFCache
+	    window.location.replace("login.html");
+	  }
+	});
+
 </script>
 
 

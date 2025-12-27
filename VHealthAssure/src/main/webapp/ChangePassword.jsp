@@ -2,6 +2,14 @@
 <%@ page import="java.sql.ResultSet" %>
 
 <%
+response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+response.setHeader("Pragma", "no-cache");
+response.setDateHeader("Expires", 0);
+
+if (session == null || session.getAttribute("loginId") == null) {
+    response.sendRedirect("login.html");
+    return;
+}
 String userName =
 (String) session.getAttribute("userName");
 
@@ -382,6 +390,20 @@ function showToast(message, type){
     toast.classList.remove("show");
   }, 3000);
 }
+(function () {
+	  if (window.history && window.history.pushState) {
+	    window.history.pushState(null, null, document.URL);
+	    window.addEventListener('popstate', function () {
+	      window.history.pushState(null, null, document.URL);
+	    });
+	  }
+	})();
+window.addEventListener("pageshow", function (event) {
+	  if (event.persisted) {
+	    // Page was restored from BFCache
+	    window.location.replace("login.html");
+	  }
+	});
 
 </script>
 

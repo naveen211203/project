@@ -1,6 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.ResultSet" %>
 <%
+	response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+	response.setHeader("Pragma", "no-cache");
+	response.setDateHeader("Expires", 0);
+
+	if (session == null || session.getAttribute("loginId") == null) {
+    	response.sendRedirect("login.html");
+    	return;
+	}
     com.VHealthAssure.Entity.RegistrationEntity user =
         (com.VHealthAssure.Entity.RegistrationEntity) request.getAttribute("user");
 
@@ -325,7 +333,7 @@ footer{
   <a>Claims</a>
   <a>Cashless Hospitals</a>
   <a>Payments</a>
-  <a>Profile & KYC</a>
+  <a href="Kyc">Profile & KYC</a>
   <a>Support</a>
 </aside>
 
@@ -492,6 +500,20 @@ profile.addEventListener("click", () => profile.classList.toggle("active"));
 document.addEventListener("click", e => {
   if(!profile.contains(e.target)) profile.classList.remove("active");
 });
+(function () {
+	  if (window.history && window.history.pushState) {
+	    window.history.pushState(null, null, document.URL);
+	    window.addEventListener('popstate', function () {
+	      window.history.pushState(null, null, document.URL);
+	    });
+	  }
+	})();
+window.addEventListener("pageshow", function (event) {
+	  if (event.persisted) {
+	    // Page was restored from BFCache
+	    window.location.replace("login.html");
+	  }
+	});
 </script>
 
 </body>
