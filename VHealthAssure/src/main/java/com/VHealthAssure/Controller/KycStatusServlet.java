@@ -40,11 +40,11 @@ public class KycStatusServlet extends HttpServlet {
                 request.setAttribute("govIdNumber", gov.getString("GovIdNumber"));
             }
 
-            request.getRequestDispatcher("index.jsp").forward(request, response);
+            request.getRequestDispatcher("KycDetails.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
-            request.getRequestDispatcher("index.jsp").forward(request, response);
+            request.getRequestDispatcher("KycDetails.jsp").forward(request, response);
         }
     }
 }
