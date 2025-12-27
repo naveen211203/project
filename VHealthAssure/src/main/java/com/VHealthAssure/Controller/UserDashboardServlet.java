@@ -7,10 +7,12 @@ import com.VHealthAssure.Dao.UserDashboardDao;
 import com.VHealthAssure.Entity.RegistrationEntity;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+@WebServlet("/User-Dashboard")
 public class UserDashboardServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -26,7 +28,9 @@ public class UserDashboardServlet extends HttpServlet {
 
 	    try {
 	        UserDashboardDao dao = new UserDashboardDao();
-
+	        String kycStatus = dao.getUserKycStatus(userId);
+	        request.setAttribute("kycStatus", kycStatus);
+	        
 	        // KPIs
 	        request.setAttribute("activePolicies", dao.getActivePolicies(userId));
 	        request.setAttribute("claimsFiled", dao.getClaimsFiled(userId));

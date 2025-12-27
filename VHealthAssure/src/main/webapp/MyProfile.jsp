@@ -405,12 +405,12 @@ main{
 <div class="layout">
 
 <aside class="sidebar">
-  <a href="UserDashboardServlet">Overview</a>
+  <a href="User-Dashboard">Dashboard</a>
   <a>My Policies</a>
   <a>Claims</a>
   <a>Cashless Hospitals</a>
   <a>Payments</a>
-  <a class="active">Profile & KYC</a>
+  <a href="Kyc">KYC Details</a>
   <a>Support</a>
 </aside>
 
@@ -470,7 +470,7 @@ main{
     <span class="edit-btn" onclick="startEdit(this)">Edit</span>
     <h3>Contact Details</h3>
     <div class="grid">
-      <div class="field"><label>Email</label><div class="value"><%= user.getEmail() %></div><input name="Email"></div>
+      <div class="field"><label>Email</label><div class="value"><%= user.getEmail() %></div><input name="Email" readonly></div>
       <div class="field"><label>Mobile</label><div class="value"><%= user.getMobile() %></div><input name="Mobile"></div>
       <div class="field"><label>Address</label><div class="value">Hyderabad</div><input></div>
       <div class="field"><label>Postal Code</label><div class="value"><%= user.getPostalCode() %></div><input name="PostalCode"></div>
@@ -555,6 +555,7 @@ function startEdit(el){
       input.value = valueText;
       input.dataset.original = valueText;
     }
+
 
     const select = f.querySelector('select');
     if (select) {
@@ -847,20 +848,16 @@ function validateUserDob(dobEl) {
 
 	  return true;
 	}
+	
 	(function () {
-		  if (window.history && window.history.pushState) {
-		    window.history.pushState(null, null, document.URL);
-		    window.addEventListener('popstate', function () {
-		      window.history.pushState(null, null, document.URL);
-		    });
-		  }
+		  // If page is loaded from browser cache (Back button)
+		  window.addEventListener("pageshow", function (event) {
+		    if (event.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") {
+		      // Force reload from server
+		      window.location.reload();
+		    }
+		  });
 		})();
-	window.addEventListener("pageshow", function (event) {
-		  if (event.persisted) {
-		    // Page was restored from BFCache
-		    window.location.replace("login.html");
-		  }
-		});
 </script>
 </body>
 </html>

@@ -93,7 +93,11 @@ public class RegistrationDao {
             ps.setBoolean(i++, user.isEmailVerified());
             ps.setBoolean(i++, user.isMobileVerified());
 
-            ps.setString(i++, safe(user.getKycStatus()));
+            String kycStatus = user.getKycStatus();
+            if (kycStatus == null || kycStatus.trim().isEmpty()) {
+                kycStatus = "NOT VERIFIED";
+            }
+            ps.setString(i++, kycStatus);
             ps.setString(i++, safe(user.getRole()));
             ps.setString(i++, safe(user.getStatus()));
 

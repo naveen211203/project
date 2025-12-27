@@ -30,6 +30,8 @@
 
     ResultSet recentClaimsRS =
         (ResultSet) request.getAttribute("recentClaimsRS");
+    String kycStatus = (String) request.getAttribute("kycStatus");
+    if (kycStatus == null) kycStatus = "NOT VERIFIED";
 %>
 
 <!DOCTYPE html>
@@ -278,6 +280,53 @@ th,td{padding:12px;border-bottom:1px solid #e5e7eb;text-align:left}
 .approved{background:var(--success)}
 .review{background:var(--warning)}
 
+/* KYC Health Status */
+.kyc-status{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 18px;
+  border-radius:12px;
+  font-weight:600;
+  margin-top:12px;
+}
+
+.kyc-status .label{
+  font-size:14px;
+  opacity:.9;
+}
+
+.kyc-status .value{
+  font-size:14px;
+}
+
+
+.not-verified{
+  background:#e0f2fe;
+  color:#075985;
+  border-left:5px solid #0284c7;
+  
+}
+
+.pending{
+  background:#fef3c7;
+  color:#92400e;
+  border-left:5px solid #f59e0b;
+}
+
+.verified{
+  background:#ecfdf5;
+  color:#065f46;
+  border-left:5px solid #16a34a;
+}
+
+.rejected{
+  background:#fef2f2;
+  color:#991b1b;
+  border-left:5px solid #dc2626;
+}
+
+
 /* BUTTON */
 .btn{
   display:inline-block;
@@ -328,12 +377,12 @@ footer{
 <div class="layout">
 
 <aside class="sidebar">
-  <a class="active">Overview</a>
+  <a class="active" href="User-Dashboard">Dashboard</a>
   <a>My Policies</a>
   <a>Claims</a>
   <a>Cashless Hospitals</a>
   <a>Payments</a>
-  <a href="Kyc">Profile & KYC</a>
+  <a href="Kyc">KYC Details</a>
   <a>Support</a>
 </aside>
 
@@ -464,23 +513,23 @@ Your next premium is due on
 <a class="btn">View Full Network</a>
 </div>
 
-<!-- KYC -->
-<%
-String kycStatus =
-    (user != null && user.getKycStatus() != null
-     && user.getKycStatus().equalsIgnoreCase("VERIFIED"))
-     ? "Verified"
-     : "Not Verified";
-%>
-
 <div class="card">
-<h3>KYC Health</h3>
-<p>Status:
-<span class="badge <%= "Verified".equals(kycStatus) ? "active" : "review" %>">
-<%= kycStatus %>
-</span>
-</p>
-<a class="btn">View Documents</a>
+<h3>KYC Details</h3>
+<div class="kyc-status <%= kycStatus.replace(" ", "-").toLowerCase() %>">
+  <span class="label">Status</span>
+  <span class="value">
+    <% if ("NOT VERIFIED".equals(kycStatus)) { %>
+      Not Verified
+    <% } else if ("PENDING".equals(kycStatus)) { %>
+      Pending Verification
+    <% } else if ("VERIFIED".equals(kycStatus)) { %>
+      Verified
+    <% } else if ("REJECTED".equals(kycStatus)) { %>
+      Rejected
+    <% } %>
+  </span>
+</div>
+
 </div>
 
 
@@ -500,20 +549,17 @@ profile.addEventListener("click", () => profile.classList.toggle("active"));
 document.addEventListener("click", e => {
   if(!profile.contains(e.target)) profile.classList.remove("active");
 });
+
+
 (function () {
-	  if (window.history && window.history.pushState) {
-	    window.history.pushState(null, null, document.URL);
-	    window.addEventListener('popstate', function () {
-	      window.history.pushState(null, null, document.URL);
-	    });
-	  }
+	  // If page is loaded from browser cache (Back button)
+	  window.addEventListener("pageshow", function (event) {
+	    if (event.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") {
+	      // Force reload from server
+	      window.location.reload();
+	    }
+	  });
 	})();
-window.addEventListener("pageshow", function (event) {
-	  if (event.persisted) {
-	    // Page was restored from BFCache
-	    window.location.replace("login.html");
-	  }
-	});
 </script>
 
 </body>

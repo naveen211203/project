@@ -13,12 +13,13 @@ String kycStatus = (String) request.getAttribute("kycStatus");
 Integer attempts = (Integer) request.getAttribute("attempts");
 String govIdType = (String) request.getAttribute("govIdType");
 String govIdNumber = (String) request.getAttribute("govIdNumber");
+String fullName = (String) request.getAttribute("fullName");
+char initial = Character.toUpperCase(fullName.trim().charAt(0));
 
 if (kycStatus == null) kycStatus = "NOT VERIFIED";
 if (attempts == null) attempts = 0;
 if (govIdType == null) govIdType = "";
 if (govIdNumber == null) govIdNumber = "";
-
 %>
 
 
@@ -473,8 +474,8 @@ main{
   </div>
 
   <div class="profile-area" id="profileArea">
-    <div class="profile-avatar">H</div>
-    <div class="profile-name"><%= request.getAttribute("fullName") %></div>
+    <div class="profile-avatar"><%= initial %></div>
+    <div class="profile-name"><%= fullName %></div>
 
     <div class="profile-dropdown">
       <a href="MyProfile">My Profile</a>
@@ -487,12 +488,12 @@ main{
 <div class="layout">
 
 <aside class="sidebar">
-  <a href="UserDashboardServlet">Overview</a>
+  <a href="User-Dashboard">Dashboard</a>
   <a>My Policies</a>
   <a>Claims</a>
+  <a>Cashless Hospitals</a>
   <a>Payments</a>
-  <a class="active">KYC</a>
-  <a>Profile</a>
+  <a class="active" href="Kyc">KYC Details</a>
   <a>Support</a>
 </aside>
 
@@ -748,21 +749,16 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
 });
-(function () {
-	  if (window.history && window.history.pushState) {
-	    window.history.pushState(null, null, document.URL);
-	    window.addEventListener('popstate', function () {
-	      window.history.pushState(null, null, document.URL);
-	    });
-	  }
-	})();
-window.addEventListener("pageshow", function (event) {
-	  if (event.persisted) {
-	    // Page was restored from BFCache
-	    window.location.replace("login.html");
-	  }
-	});
 
+(function () {
+	  // If page is loaded from browser cache (Back button)
+	  window.addEventListener("pageshow", function (event) {
+	    if (event.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") {
+	      // Force reload from server
+	      window.location.reload();
+	    }
+	  });
+	})();
 </script>
 
 

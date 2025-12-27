@@ -248,13 +248,13 @@ main{padding:28px;overflow-y:auto}
 <div class="layout">
 
 <aside class="sidebar">
-  <a href="UserDashboardServlet">Overview</a>
+  <a href="User-Dashboard">Dashboard</a>
   <a>My Policies</a>
   <a>Claims</a>
   <a>Cashless Hospitals</a>
   <a>Payments</a>
-  <a>Profile & KYC</a>
-  <a class="active">Change Password</a>
+  <a href="Kyc">KYC Details</a>
+  <a>Support</a>
 </aside>
 
 <main>
@@ -390,20 +390,17 @@ function showToast(message, type){
     toast.classList.remove("show");
   }, 3000);
 }
+
+
 (function () {
-	  if (window.history && window.history.pushState) {
-	    window.history.pushState(null, null, document.URL);
-	    window.addEventListener('popstate', function () {
-	      window.history.pushState(null, null, document.URL);
-	    });
-	  }
+	  // If page is loaded from browser cache (Back button)
+	  window.addEventListener("pageshow", function (event) {
+	    if (event.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") {
+	      // Force reload from server
+	      window.location.reload();
+	    }
+	  });
 	})();
-window.addEventListener("pageshow", function (event) {
-	  if (event.persisted) {
-	    // Page was restored from BFCache
-	    window.location.replace("login.html");
-	  }
-	});
 
 </script>
 

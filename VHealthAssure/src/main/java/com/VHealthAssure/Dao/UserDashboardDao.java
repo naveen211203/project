@@ -67,6 +67,17 @@ public class UserDashboardDao {
 
         return ps.executeQuery();
     }
+    public String getUserKycStatus(String userId) throws Exception {
+        String sql = "SELECT KycStatus FROM users WHERE UserId=?";
+        try (Connection con = MySqlInstance.getinstance().getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getString("KycStatus");
+        }
+        return "NOT VERIFIED";
+    }
+
 
 
     public RegistrationEntity getUserById(String userId) throws Exception {
