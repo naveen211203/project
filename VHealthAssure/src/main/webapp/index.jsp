@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Profile | VHealthAssure</title>
+<title>KYC Status | VHealthAssure</title>
 
 <style>
 :root{
@@ -15,15 +15,16 @@
   --text:#0f172a;
   --muted:#64748b;
   --border:#e5e7eb;
+  --warn:#dc2626;
 }
 
 /* RESET */
 *{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,Arial,sans-serif}
 body{
   background:var(--bg);
-  color:var(--text);
   height:100vh;
   overflow:hidden;
+  color:var(--text);
 }
 
 /* HEADER */
@@ -57,9 +58,6 @@ header{
 .sidebar{
   background:#081a30;
   padding:24px 16px;
-  position:sticky;
-  top:64px;
-  height:calc(100vh - 64px);
 }
 .sidebar a{
   display:block;
@@ -69,7 +67,6 @@ header{
   text-decoration:none;
   border-radius:8px;
   font-size:14px;
-  cursor:pointer;
 }
 .sidebar a:hover,.sidebar a.active{
   background:#1e293b;
@@ -78,283 +75,372 @@ header{
 
 /* MAIN */
 main{
-  padding:28px;
+  padding:40px;
   overflow-y:auto;
 }
 
-/* PROFILE WRAPPER */
-.profile-wrapper{
-  max-width:1200px;
+/* KYC CONTAINER */
+.kyc-container{
+  max-width:780px;
   margin:auto;
-  display:flex;
-  flex-direction:column;
-  gap:28px;
+  background:#fff;
+  border-radius:20px;
+  box-shadow:0 18px 40px rgba(0,0,0,.12);
+  padding:40px;
 }
 
-/* CARD */
-.card{
-  background:linear-gradient(180deg,#f8fafc 0%,#ffffff 40%);
-  border-radius:18px;
-  padding:26px 30px;
-  box-shadow:0 10px 26px rgba(0,0,0,.08);
-  position:relative;
-  border-left:4px solid var(--primary);
-}
-.card h3{
-  font-size:16px;
+/* TITLES */
+.kyc-title{
+  font-size:22px;
   color:var(--primary);
-  margin-bottom:18px;
-  position:relative;
-  padding-bottom:6px;
+  margin-bottom:6px;
 }
-.card h3::after{
-  content:"";
-  position:absolute;
-  left:0;
-  bottom:0;
-  width:38px;
-  height:3px;
-  background:var(--primary);
-  border-radius:6px;
+.kyc-sub{
+  color:var(--muted);
+  font-size:14px;
+  margin-bottom:28px;
 }
 
-/* EDIT BUTTON */
-.edit-btn{
-  position:absolute;
-  top:22px;
-  right:26px;
-  font-size:13px;
-  color:var(--accent);
-  font-weight:500;
-  cursor:pointer;
-  z-index:10;
-  pointer-events:auto;
-}
-
-/* USER OVERVIEW */
-.user-overview{
-  display:grid;
-  grid-template-columns:120px 1fr 1fr;
-  align-items:center;
-  gap:28px;
-  border-left:none;
-  background:linear-gradient(135deg,#e8f0ff 0%,#ffffff 60%);
-  box-shadow:0 14px 32px rgba(11,42,74,.18);
-}
-
-.big-avatar{
-  width:96px;height:96px;border-radius:50%;
-  background:linear-gradient(135deg,#2563eb,#1e40af);
-  display:flex;align-items:center;justify-content:center;
-  font-size:34px;font-weight:600;color:#fff;
-  box-shadow:0 8px 22px rgba(11,42,74,.35);
-}
-
-.user-meta p{font-size:13px;color:var(--muted)}
-.user-stats{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:14px;
-  font-size:13px;
-}
-.stat{
+/* STATUS */
+.status-strip{
   display:flex;
   justify-content:space-between;
-  border-bottom:1px solid var(--border);
-  padding-bottom:6px;
+  align-items:center;
+  padding:16px 20px;
+  background:#fef2f2;
+  border-radius:14px;
+  border-left:5px solid var(--warn);
+  margin-bottom:32px;
+}
+.status-strip strong{
+  color:var(--warn);
+  font-size:14px;
 }
 
-/* GRID */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:20px;
+/* INFO */
+.info{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+  margin-bottom:30px;
 }
+.info-row{
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+}
+.label{color:var(--muted)}
+.value{font-weight:600}
 
-/* VIEW MODE */
-.value{
-  padding:10px 12px;
+/* INSTRUCTIONS */
+.instructions{
   background:#f8fafc;
-  border-radius:8px;
   border:1px solid var(--border);
+  padding:18px;
+  border-radius:14px;
   font-size:14px;
+  color:#334155;
+  line-height:1.7;
+  margin-bottom:26px;
 }
 
-/* INPUT */
-.field input{
-  width:100%;
-  padding:10px 12px;
-  border-radius:8px;
-  border:1px solid #c7d7f3;
+/* UPLOAD */
+.upload-box{
+  border:2px dashed #c7d7f3;
+  border-radius:16px;
+  min-height:200px;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  gap:12px;
+  padding:28px;
+  text-align:center;
+  margin-bottom:24px;
+
+  transition:all .3s ease;
+  animation:pulseBorder 2.5s infinite;
+}
+
+.upload-box:hover{
   background:#f8fbff;
+  border-color:#2563eb;
+}
+
+/* ICON */
+.upload-icon{
+  font-size:40px;
+  opacity:.9;
+  animation:floatIcon 3s ease-in-out infinite;
+}
+
+/* TITLE */
+.upload-title{
+  font-size:16px;
+  font-weight:600;
+  color:#0f172a;
+}
+
+/* DESCRIPTION */
+.upload-desc{
   font-size:14px;
+  color:#64748b;
+}
+
+/* BUTTON */
+.upload-btn{
+  margin-top:6px;
+  background:#2563eb;
+  color:#fff;
+  padding:10px 24px;
+  border-radius:10px;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+
+.upload-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 20px rgba(37,99,235,.25);
+}
+
+.upload-btn input{
   display:none;
+}
+
+/* NOTE */
+.upload-note{
+  font-size:12px;
+  color:#64748b;
+}
+
+/* ANIMATIONS */
+@keyframes floatIcon{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-6px)}
+}
+
+@keyframes pulseBorder{
+  0%{box-shadow:0 0 0 0 rgba(37,99,235,.15)}
+  70%{box-shadow:0 0 0 10px rgba(37,99,235,0)}
+  100%{box-shadow:0 0 0 0 rgba(37,99,235,0)}
+}
+
+
+/* AFTER UPLOAD STATE */
+.upload-box.uploaded{
+  animation:none;
+  border-style:solid;
+  border-color:#22c55e;
+  background:#f0fdf4;
+}
+
+.upload-success{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:15px;
+  font-weight:600;
+  color:#166534;
+  animation:fadeIn .4s ease;
+}
+
+.upload-file{
+  font-size:13px;
+  color:#334155;
+  margin-top:6px;
+}
+
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(6px)}
+  to{opacity:1; transform:translateY(0)}
+}
+
+/* REMOVE FILE BUTTON */
+.remove-file{
+  margin-top:8px;
+  background:none;
+  border:none;
+  color:#dc2626;
+  font-size:13px;
+  font-weight:600;
   cursor:pointer;
 }
-/* FIELD SPACING IMPROVEMENT */
-.field label{
-  display:block;
-  margin-bottom:8px;   /* space between label & input/value */
-  font-weight:500;
-}
 
-.field .value,
-.field input{
-  margin-bottom:6px;   /* space below each field */
+.remove-file:hover{
+  text-decoration:underline;
 }
 
 
-/* ACTIONS */
-.actions{
-  display:none;
+/* DECLARATION */
+.declaration{
+  display:flex;
+  gap:10px;
+  font-size:13px;
+  color:#334155;
+  margin-bottom:30px;
+}
+.declaration input{
+  width:20px;
+  height:20px;
+  cursor:pointer;
+}
+
+/* ACTION */
+.action{
+  display:flex;
   justify-content:flex-end;
-  gap:12px;
-  margin-top:18px;
 }
 .btn{
-  padding:9px 18px;
-  border-radius:8px;
+  padding:12px 36px;
+  border-radius:12px;
   border:none;
-  font-size:13px;
+  background:var(--accent);
+  color:#fff;
+  font-size:14px;
+  font-weight:600;
   cursor:pointer;
 }
-.btn-secondary{background:#e5e7eb}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover{background:#1e4fd8}
-.btn-secondary:hover{background:#d1d5db}
-
-/* EDIT MODE */
-.card.editing .value{display:none}
-.card.editing input{display:block}
-.card.editing .actions{display:flex}
-
-@media(max-width:900px){
-  .user-overview{grid-template-columns:1fr;text-align:center}
-  .grid{grid-template-columns:1fr}
-}
+.btn:hover{background:#1e4fd8}
 </style>
 </head>
 
 <body>
 
 <header>
-  <div class="brand"><div class="logo-box"></div><h1>VHealthAssure</h1></div>
-  <div class="profile-area"><div class="profile-avatar">U</div><span>User</span></div>
+  <div class="brand">
+    <div class="logo-box"></div>
+    <h1>VHealthAssure</h1>
+  </div>
+  <div class="profile-area">
+    <div class="profile-avatar">U</div>
+    <span>User</span>
+  </div>
 </header>
 
 <div class="layout">
 
 <aside class="sidebar">
-  <a href="UserDashboard.jsp">Overview</a>
+  <a href="UserDashboardServlet">Overview</a>
   <a>My Policies</a>
   <a>Claims</a>
-  <a>Cashless Hospitals</a>
   <a>Payments</a>
-  <a class="active">Profile & KYC</a>
+  <a class="active">KYC</a>
+  <a>Profile</a>
   <a>Support</a>
 </aside>
 
 <main>
-<div class="profile-wrapper">
 
-  <!-- USER OVERVIEW -->
-  <div class="card user-overview">
-    <div class="big-avatar">U</div>
-    <div class="user-meta"><h2>User Name</h2><p>Policy Holder</p></div>
-    <div class="user-stats">
-      <div class="stat"><span>Account</span><strong>Active</strong></div>
-      <div class="stat"><span>KYC</span><strong>Verified</strong></div>
-      <div class="stat"><span>Role</span><strong>USER</strong></div>
-      <div class="stat"><span>Member Since</span><strong>2024</strong></div>
+<div class="kyc-container">
+
+  <div class="kyc-title">Identity Verification</div>
+  <div class="kyc-sub">Verification required to activate full services</div>
+
+  <div class="status-strip">
+    <span>Your account is not verified</span>
+    <strong>NOT VERIFIED</strong>
+  </div>
+
+  <div class="info">
+    <div class="info-row">
+      <span class="label">Government ID</span>
+      <span class="value">Aadhaar</span>
+    </div>
+    <div class="info-row">
+      <span class="label">ID Number</span>
+      <span class="value">XXXX-XXXX-1234</span>
     </div>
   </div>
 
-  <!-- PERSONAL -->
-  <div class="card">
-    <span class="edit-btn" onclick="startEdit(this)">Edit</span>
-    <h3>Personal Information</h3>
-    <div class="grid">
-      <div class="field"><label>Full Name</label><div class="value">John Doe</div><input></div>
-      <div class="field"><label>Date of Birth</label><div class="value">1999-04-12</div><input type="date"></div>
-      <div class="field"><label>Gender</label><div class="value">Male</div><input></div>
-      <div class="field"><label>City</label><div class="value">Hyderabad</div><input></div>
-    </div>
-    <div class="actions">
-      <button class="btn btn-secondary" onclick="cancelEdit(this)">Cancel</button>
-      <button class="btn btn-primary">Save</button>
-    </div>
+  <div class="instructions">
+    <strong>Please upload a clear copy of your government-issued ID.</strong><br>
+    • Accepted formats: PDF, JPG, PNG<br>
+    • File size should not exceed 5 MB<br>
+    • Ensure name and ID number are clearly visible<br>
+    • Do not upload expired or masked documents<br>
+    • Uploaded document must match the Government ID type and ID number.
   </div>
 
-  <!-- CONTACT -->
-  <div class="card">
-    <span class="edit-btn" onclick="startEdit(this)">Edit</span>
-    <h3>Contact Details</h3>
-    <div class="grid">
-      <div class="field"><label>Email</label><div class="value">user@mail.com</div><input></div>
-      <div class="field"><label>Mobile</label><div class="value">9876543210</div><input></div>
-      <div class="field"><label>Address</label><div class="value">Hyderabad</div><input></div>
-      <div class="field"><label>Postal Code</label><div class="value">500001</div><input></div>
-    </div>
-    <div class="actions">
-      <button class="btn btn-secondary" onclick="cancelEdit(this)">Cancel</button>
-      <button class="btn btn-primary">Save</button>
-    </div>
+  <div class="upload-box">
+  	<div class="upload-icon">📄</div>
+  	<div class="upload-title">Upload your Government ID</div>
+  	<div class="upload-desc">Drag & drop your document here or click to browse</div>
+  	<label class="upload-btn">
+  	Choose File
+    	<input type="file" accept=".pdf,.jpg,.jpeg,.png" id="kycFile">
+ 	 </label>
+ 	<div class="upload-note">PDF, JPG or PNG • Max size 5 MB</div>
   </div>
 
-  <!-- NOMINEE -->
-  <div class="card">
-    <span class="edit-btn" onclick="startEdit(this)">Edit</span>
-    <h3>Nominee Details</h3>
-    <div class="grid">
-      <div class="field"><label>Nominee Name</label><div class="value">Father</div><input></div>
-      <div class="field"><label>Relationship</label><div class="value">Parent</div><input></div>
-      <div class="field"><label>Nominee DOB</label><div class="value">1970-01-01</div><input type="date"></div>
-      <div class="field"><label>Share (%)</label><div class="value">100</div><input></div>
-    </div>
-    <div class="actions">
-      <button class="btn btn-secondary" onclick="cancelEdit(this)">Cancel</button>
-      <button class="btn btn-primary">Save</button>
-    </div>
+
+  <div class="declaration">
+    <input type="checkbox" id="declare">
+    <label for="declare">
+      I hereby declare that the document uploaded is genuine and belongs to me.
+      I understand that providing false information may result in rejection of my account.
+    </label>
   </div>
 
-  <!-- EMPLOYMENT -->
-  <div class="card">
-    <span class="edit-btn" onclick="startEdit(this)">Edit</span>
-    <h3>Employment & Income</h3>
-    <div class="grid">
-      <div class="field"><label>Status</label><div class="value">Salaried</div><input></div>
-      <div class="field"><label>Occupation</label><div class="value">Engineer</div><input></div>
-      <div class="field"><label>Annual Income</label><div class="value">600000</div><input></div>
-      <div class="field"><label>Company</label><div class="value">ABC Pvt Ltd</div><input></div>
-    </div>
-    <div class="actions">
-      <button class="btn btn-secondary" onclick="cancelEdit(this)">Cancel</button>
-      <button class="btn btn-primary">Save</button>
-    </div>
+  <div class="action">
+    <button class="btn">Submit for Verification</button>
   </div>
 
 </div>
+
 </main>
 </div>
 
 <script>
-function startEdit(el){
-  const card = el.closest('.card');
-  if(card.classList.contains('editing')) return;
+const fileInput = document.getElementById("kycFile");
+const uploadBox = document.querySelector(".upload-box");
 
-  card.classList.add('editing');
+fileInput.addEventListener("change", function () {
+  if (!this.files || !this.files[0]) return;
 
-  card.querySelectorAll('.field').forEach(f=>{
-    const val = f.querySelector('.value').innerText.trim();
-    f.querySelector('input').value = val;
+  const file = this.files[0];
+  const fileName = file.name;
+
+  // Show uploaded state with remove option
+  uploadBox.innerHTML = `
+    <div class="upload-success">
+      ✅ Document uploaded successfully
+    </div>
+    <div class="upload-file">
+      ${fileName}
+    </div>
+    <button class="remove-file" id="removeFile">Remove file</button>
+  `;
+
+  uploadBox.classList.add("uploaded");
+
+  // Remove file logic
+  document.getElementById("removeFile").addEventListener("click", () => {
+    fileInput.value = "";
+    uploadBox.classList.remove("uploaded");
+
+    // Restore original upload UI
+    uploadBox.innerHTML = `
+      <div class="upload-icon">📄</div>
+      <div class="upload-title">Upload your Government ID</div>
+      <div class="upload-desc">Drag & drop your document here or click to browse</div>
+      <label class="upload-btn">
+        Choose File
+        <input type="file" accept=".pdf,.jpg,.jpeg,.png" id="kycFile">
+      </label>
+      <div class="upload-note">PDF, JPG or PNG • Max size 5 MB</div>
+    `;
+
+    // Re-bind input after DOM reset
+    document.getElementById("kycFile").addEventListener("change", arguments.callee);
   });
-}
-
-function cancelEdit(el){
-  const card = el.closest('.card');
-  card.classList.remove('editing');
-}
+});
 </script>
+
+
 
 </body>
 </html>
