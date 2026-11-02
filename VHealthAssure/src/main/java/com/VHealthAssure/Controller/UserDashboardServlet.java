@@ -2,7 +2,10 @@ package com.VHealthAssure.Controller;
 
 import java.io.IOException;
 import java.sql.ResultSet;
+import java.util.List;
 
+import com.VHealthAssure.Dao.HospitalDao;
+import com.VHealthAssure.Entity.HospitalEntity;
 import com.VHealthAssure.Dao.UserDashboardDao;
 import com.VHealthAssure.Entity.RegistrationEntity;
 
@@ -43,6 +46,14 @@ public class UserDashboardServlet extends HttpServlet {
 	        // policy + claims
 	        request.setAttribute("activePolicyRS", dao.getActivePolicy(userId));
 	        request.setAttribute("recentClaimsRS", dao.getRecentClaims(userId));
+	        
+	        //Cashless Hospitals
+	        HospitalDao hospitalDao = new HospitalDao();
+
+	        List<HospitalEntity> cityHospitals =
+	                hospitalDao.getActiveHospitalsByCity(user.getCity());
+
+	        request.setAttribute("cityHospitals", cityHospitals);
 
 	        // 🔥 NEXT PREMIUM
 	        ResultSet premiumRS = dao.getNextPremium(userId);

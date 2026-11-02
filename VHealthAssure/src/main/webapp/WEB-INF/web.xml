@@ -52,6 +52,42 @@
   	<description></description>
   	<servlet-class>com.VHealthAssure.Controller.LogoutServlet</servlet-class>
   </servlet>
+  <servlet>
+  	<servlet-name>MyPoliciesServlet</servlet-name>
+  	<display-name>MyPoliciesServlet</display-name>
+  	<description></description>
+  	<servlet-class>com.VHealthAssure.Controller.MyPoliciesServlet</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>ClaimsServlet</servlet-name>
+  	<display-name>ClaimsServlet</display-name>
+  	<description></description>
+  	<servlet-class>com.VHealthAssure.Controller.ClaimsServlet</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>ClaimDetailsServlet</servlet-name>
+  	<display-name>ClaimDetailsServlet</display-name>
+  	<description></description>
+  	<servlet-class>com.VHealthAssure.Controller.ClaimDetailsServlet</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>CashlessHospitalsServlet</servlet-name>
+  	<display-name>CashlessHospitalsServlet</display-name>
+  	<description></description>
+  	<servlet-class>com.VHealthAssure.Controller.CashlessHospitalsServlet</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>SupportServlet</servlet-name>
+  	<display-name>SupportServlet</display-name>
+  	<description></description>
+  	<servlet-class>com.VHealthAssure.Controller.SupportServlet</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>MySupportTicketsServlet</servlet-name>
+  	<display-name>MySupportTicketsServlet</display-name>
+  	<description></description>
+  	<servlet-class>com.VHealthAssure.Controller.MySupportTicketsServlet</servlet-class>
+  </servlet>
   <servlet-mapping>
   	<servlet-name>RegistrationServlet</servlet-name>
   	<url-pattern>/RegistrationServlet</url-pattern>
@@ -83,5 +119,29 @@
   <servlet-mapping>
   	<servlet-name>LogoutServlet</servlet-name>
   	<url-pattern>/LogoutServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>MyPoliciesServlet</servlet-name>
+  	<url-pattern>/MyPoliciesServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>ClaimsServlet</servlet-name>
+  	<url-pattern>/ClaimsServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>ClaimDetailsServlet</servlet-name>
+  	<url-pattern>/ClaimDetailsServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>CashlessHospitalsServlet</servlet-name>
+  	<url-pattern>/CashlessHospitalsServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>SupportServlet</servlet-name>
+  	<url-pattern>/SupportServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>MySupportTicketsServlet</servlet-name>
+  	<url-pattern>/MySupportTicketsServlet</url-pattern>
   </servlet-mapping>
 </web-app>

@@ -249,12 +249,12 @@ main{padding:28px;overflow-y:auto}
 
 <aside class="sidebar">
   <a href="User-Dashboard">Dashboard</a>
-  <a>My Policies</a>
-  <a>Claims</a>
-  <a>Cashless Hospitals</a>
-  <a>Payments</a>
+  <a href="MyPolicies">My Policies</a>
+  <a href="Claims">Claims</a>
+  <a href="CashlessHospitals">Cashless Hospitals</a>
+  <a href="Payments.jsp">Payments</a>
   <a href="Kyc">KYC Details</a>
-  <a>Support</a>
+  <a href="Support">Support</a>
 </aside>
 
 <main>

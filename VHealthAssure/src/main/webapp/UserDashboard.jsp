@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.ResultSet" %>
+<%@ page import="java.util.List" %>
+<%@ page import="com.VHealthAssure.Entity.HospitalEntity" %>
 <%
 	response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 	response.setHeader("Pragma", "no-cache");
@@ -233,6 +235,40 @@ main{
 }
 
 
+/* Cashless Hospitals*/
+.hospital-dashboard-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.hospital-dashboard-item strong {
+    display: block;
+    color: #0b2a4a;
+    font-size: 13px;
+}
+
+.hospital-dashboard-item p {
+    color: #64748b;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.hospital-dashboard-item small {
+    color: #64748b;
+    font-size: 11px;
+}
+
+.hospital-call {
+    color: #2563eb;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+}
+
 /* KPI */
 .kpi-row{
   display:grid;
@@ -378,12 +414,12 @@ footer{
 
 <aside class="sidebar">
   <a class="active" href="User-Dashboard">Dashboard</a>
-  <a>My Policies</a>
-  <a>Claims</a>
-  <a>Cashless Hospitals</a>
-  <a>Payments</a>
+  <a href="MyPolicies">My Policies</a>
+  <a href="Claims">Claims</a>
+  <a href="CashlessHospitals">Cashless Hospitals</a>
+  <a href="Payments.jsp">Payments</a>
   <a href="Kyc">KYC Details</a>
-  <a>Support</a>
+  <a href="Support">Support</a>
 </aside>
 
 <main>
@@ -504,13 +540,54 @@ Your next premium is due on
 </div>
 
 <div class="card">
-<h3>Cashless Hospitals in <%= city %></h3>
-<ul>
-<li>Care Multispeciality Hospital</li>
-<li>CityLife Medical Center</li>
-<li>MedPlus Network Hospital</li>
-</ul>
-<a class="btn">View Full Network</a>
+    <h3>Cashless Hospitals in <%= city %></h3>
+
+    <%
+        List<HospitalEntity> cityHospitals =
+            (List<HospitalEntity>) request.getAttribute("cityHospitals");
+
+        if (cityHospitals != null && !cityHospitals.isEmpty()) {
+            int count = 0;
+
+            for (HospitalEntity hospital : cityHospitals) {
+                if (count >= 2) break;
+                count++;
+    %>
+
+        <div class="hospital-dashboard-item">
+            <div>
+                <strong><%= hospital.getHospitalName() %></strong>
+                <p><%= hospital.getAddress() %></p>
+                <small>
+                    <%= hospital.getCity() %>, <%= hospital.getState() %>
+                </small>
+            </div>
+
+            <% if (hospital.getContactNumber() != null &&
+                   !hospital.getContactNumber().trim().isEmpty()) { %>
+                <a href="tel:<%= hospital.getContactNumber() %>"
+                   class="hospital-call">
+                    Call
+                </a>
+            <% } %>
+        </div>
+
+    <%
+            }
+        } else {
+    %>
+
+        <p style="color:#64748b;">
+            No active cashless hospitals found in <%= city %>.
+        </p>
+
+    <%
+        }
+    %>
+
+    <a href="CashlessHospitals" class="btn">
+        View Full Network
+    </a>
 </div>
 
 <div class="card">
