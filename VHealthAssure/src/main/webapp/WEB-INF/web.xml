@@ -88,6 +88,24 @@
   	<description></description>
   	<servlet-class>com.VHealthAssure.Controller.MySupportTicketsServlet</servlet-class>
   </servlet>
+  <servlet>
+  	<servlet-name>AdminDashboardServlet</servlet-name>
+  	<display-name>AdminDashboardServlet</display-name>
+  	<description></description>
+  	<servlet-class>com.VHealthAssure.Controller.AdminDashboardServlet</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>AdminUsersServlet</servlet-name>
+  	<display-name>AdminUsersServlet</display-name>
+  	<description></description>
+  	<servlet-class>com.VHealthAssure.Controller.AdminUsersServlet</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>AdminPoliciesServlet</servlet-name>
+  	<display-name>AdminPoliciesServlet</display-name>
+  	<description></description>
+  	<servlet-class>com.VHealthAssure.Controller.AdminPoliciesServlet</servlet-class>
+  </servlet>
   <servlet-mapping>
   	<servlet-name>RegistrationServlet</servlet-name>
   	<url-pattern>/RegistrationServlet</url-pattern>
@@ -143,5 +161,17 @@
   <servlet-mapping>
   	<servlet-name>MySupportTicketsServlet</servlet-name>
   	<url-pattern>/MySupportTicketsServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>AdminDashboardServlet</servlet-name>
+  	<url-pattern>/AdminDashboardServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>AdminUsersServlet</servlet-name>
+  	<url-pattern>/AdminUsersServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>AdminPoliciesServlet</servlet-name>
+  	<url-pattern>/AdminPoliciesServlet</url-pattern>
   </servlet-mapping>
 </web-app>
