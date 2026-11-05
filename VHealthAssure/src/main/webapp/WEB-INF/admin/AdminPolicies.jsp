@@ -3,7 +3,6 @@
     pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.List,java.util.Map" %>
-<%@ page import="java.sql.Timestamp" %>
 
 <%!
     private String esc(Object value) {
@@ -34,6 +33,7 @@
         (Map<String, Integer>) request.getAttribute("statistics");
 
     String search = (String) request.getAttribute("search");
+
     String selectedStatus =
         (String) request.getAttribute("selectedStatus");
 
@@ -41,8 +41,14 @@
 
     if (search == null) search = "";
     if (selectedStatus == null) selectedStatus = "ALL";
-    if (adminName == null || adminName.trim().isEmpty())
+
+    if (adminName == null || adminName.trim().isEmpty()) {
         adminName = "Administrator";
+    }
+
+    String initial = adminName.substring(0, 1).toUpperCase();
+
+    String ctx = request.getContextPath();
 
     int totalPolicies = 0;
     int activePolicies = 0;
@@ -56,11 +62,12 @@
         cancelledPolicies = statistics.getOrDefault("cancelledPolicies", 0);
     }
 
-    String ctx = request.getContextPath();
+    String message = request.getParameter("message");
 %>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
@@ -70,6 +77,8 @@
 
 <style>
 
+/* ================= ROOT ================= */
+
 :root {
     --primary: #0b2a4a;
     --dark: #071d33;
@@ -78,6 +87,7 @@
     --text: #172033;
     --muted: #64748b;
     --border: #e5eaf1;
+    --white: #ffffff;
 }
 
 * {
@@ -103,7 +113,12 @@ header {
     right: 0;
     z-index: 1000;
 
-    background: linear-gradient(135deg, var(--dark), var(--primary));
+    background: linear-gradient(
+        135deg,
+        var(--dark),
+        var(--primary)
+    );
+
     color: white;
 
     display: flex;
@@ -119,7 +134,7 @@ header {
     gap: 12px;
 }
 
-.logo-box {
+.logo {
     width: 42px;
     height: 42px;
     background: white;
@@ -127,7 +142,7 @@ header {
     overflow: hidden;
 }
 
-.logo-box img {
+.logo img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -138,71 +153,62 @@ header {
     font-weight: 600;
 }
 
-/* ADMIN PROFILE */
+/* ================= ADMIN PROFILE DROPDOWN ================= */
 
-.profile-area {
+.admin-area {
     position: relative;
     display: flex;
     align-items: center;
-    gap: 11px;
-    padding: 8px 12px;
-    border-radius: 8px;
+    gap: 12px;
     cursor: pointer;
-    background: transparent;
 }
 
-.profile-area:hover {
-    background: rgba(255,255,255,.08);
-}
-
-.profile-avatar {
-    width: 37px;
-    height: 37px;
+.avatar {
+    width: 38px;
+    height: 38px;
+    background: var(--accent);
     border-radius: 50%;
-    background: linear-gradient(135deg, #2563eb, #1e40af);
     display: grid;
     place-items: center;
     font-weight: 600;
 }
 
-.profile-name {
-    font-size: 13px;
-    color: white;
+.admin-name {
+    font-size: 14px;
 }
 
-.profile-dropdown {
+.dropdown {
     display: none;
     position: absolute;
-    top: 53px;
     right: 0;
-    width: 190px;
-    background: #ffffff;
-    border-radius: 9px;
-    box-shadow: 0 8px 25px rgba(0,0,0,.18);
+    top: 48px;
+    width: 180px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.15);
     overflow: hidden;
     z-index: 1100;
 }
 
-.profile-area.active .profile-dropdown {
+.admin-area.active .dropdown {
     display: block;
 }
 
-.profile-dropdown a {
+.dropdown a {
     display: block;
     padding: 13px 16px;
-    color: #334155;
+    color: var(--text);
     text-decoration: none;
     font-size: 13px;
 }
 
-.profile-dropdown a:hover {
+.dropdown a:hover {
     background: #f1f5f9;
-    color: #2563eb;
 }
 
-.profile-dropdown .logout {
+.dropdown .logout {
     color: #dc2626;
-    border-top: 1px solid #edf0f4;
+    border-top: 1px solid var(--border);
 }
 
 /* ================= LAYOUT ================= */
@@ -236,6 +242,7 @@ header {
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 1.3px;
+
     padding: 8px 13px 15px;
 }
 
@@ -249,6 +256,7 @@ header {
 
     border-radius: 8px;
     font-size: 13px;
+
     transition: .2s;
 }
 
@@ -267,6 +275,7 @@ header {
 main {
     margin-left: 245px;
     padding: 30px;
+
     min-height: calc(100vh - 68px);
     min-width: 0;
 }
@@ -286,7 +295,7 @@ main {
     font-size: 13px;
 }
 
-/* ================= SUMMARY ================= */
+/* ================= SUMMARY CARDS ================= */
 
 .summary {
     display: grid;
@@ -298,6 +307,7 @@ main {
 .summary-card {
     background: white;
     padding: 20px;
+
     border-radius: 12px;
     border: 1px solid var(--border);
 }
@@ -313,18 +323,15 @@ main {
     margin-top: 9px;
 }
 
-.total { border-top: 3px solid #2563eb; }
-.active-card { border-top: 3px solid #16a34a; }
-.expired-card { border-top: 3px solid #f59e0b; }
-.cancelled-card { border-top: 3px solid #dc2626; }
-
 /* ================= TABLE PANEL ================= */
 
 .panel {
     background: white;
     padding: 23px;
+
     border-radius: 13px;
     border: 1px solid var(--border);
+
     box-shadow: 0 5px 18px rgba(15,23,42,.04);
 }
 
@@ -332,8 +339,10 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     gap: 15px;
     flex-wrap: wrap;
+
     margin-bottom: 20px;
 }
 
@@ -348,12 +357,16 @@ main {
     flex-wrap: wrap;
 }
 
-input, select {
+input,
+select {
     height: 40px;
+
     border: 1px solid #dbe2ea;
     border-radius: 7px;
+
     padding: 0 12px;
     font-size: 12px;
+
     outline: none;
     background: white;
 }
@@ -362,17 +375,21 @@ input {
     width: 250px;
 }
 
-input:focus, select:focus {
+input:focus,
+select:focus {
     border-color: var(--accent);
 }
 
 button {
     height: 40px;
     padding: 0 17px;
+
     background: var(--accent);
     color: white;
+
     border: none;
     border-radius: 7px;
+
     cursor: pointer;
     font-size: 12px;
     font-weight: 600;
@@ -383,11 +400,16 @@ button:hover {
 }
 
 .clear-link {
-    display: inline-block;
-    padding: 12px 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
     height: 40px;
+    padding: 0 14px;
+
     background: #eaf1ff;
     color: #1d4ed8;
+
     text-decoration: none;
     border-radius: 7px;
     font-size: 12px;
@@ -411,6 +433,7 @@ th {
     text-align: left;
     background: #f8fafc;
     color: #475569;
+
     padding: 15px 12px;
     font-weight: 600;
     white-space: nowrap;
@@ -419,6 +442,7 @@ th {
 td {
     padding: 14px 12px;
     border-bottom: 1px solid #edf0f4;
+
     color: #334155;
     vertical-align: middle;
 }
@@ -432,6 +456,7 @@ td {
     font-size: 10px;
     color: #94a3b8;
     margin-top: 4px;
+    overflow-wrap: anywhere;
 }
 
 .customer-name {
@@ -442,6 +467,7 @@ td {
 .status {
     display: inline-block;
     padding: 5px 10px;
+
     border-radius: 20px;
     font-size: 10px;
     font-weight: 600;
@@ -473,9 +499,30 @@ td {
     color: var(--muted);
 }
 
+/* ================= ALERTS ================= */
+
+.alert {
+    padding: 13px 16px;
+    border-radius: 8px;
+
+    margin-bottom: 18px;
+    font-size: 13px;
+}
+
+.success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
 /* ================= RESPONSIVE ================= */
 
 @media(max-width: 1100px) {
+
     .summary {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -495,6 +542,7 @@ td {
 
         display: flex;
         gap: 5px;
+
         padding: 10px;
         overflow-x: auto;
     }
@@ -529,8 +577,8 @@ td {
         width: 100%;
     }
 
-    .profile-name {
-        display: none;
+    .admin-name {
+        font-size: 11px;
     }
 
     .brand h1 {
@@ -550,7 +598,7 @@ td {
 
     <div class="brand">
 
-        <div class="logo-box">
+        <div class="logo">
             <img src="<%= ctx %>/images/logo.jpg"
                  alt="VHealthAssure Logo">
         </div>
@@ -559,24 +607,25 @@ td {
 
     </div>
 
+    <!-- SAME PROFILE DROPDOWN AS ADMINUSERS.JSP -->
 
-    <div class="profile-area" id="profileArea">
+    <div class="admin-area" id="adminArea">
 
-        <div class="profile-avatar">
-            <%= esc(adminName.substring(0, 1).toUpperCase()) %>
+        <div class="avatar">
+            <%= initial %>
         </div>
 
-        <div class="profile-name">
-            <%= esc(adminName) %>
+        <div class="admin-name">
+            <%= esc(adminName) %> ▾
         </div>
 
-        <div class="profile-dropdown">
+        <div class="dropdown">
 
-            <a href="<%= ctx %>/AdminProfile">
+            <a href="AdminProfile">
                 Admin Profile
             </a>
 
-            <a href="<%= ctx %>/AdminChangePassword">
+            <a href="AdminChangePassword">
                 Change Password
             </a>
 
@@ -589,7 +638,6 @@ td {
     </div>
 
 </header>
-
 
 <div class="layout">
 
@@ -631,8 +679,7 @@ td {
 
     </aside>
 
-
-    <!-- ================= MAIN ================= -->
+    <!-- ================= MAIN CONTENT ================= -->
 
     <main>
 
@@ -646,35 +693,61 @@ td {
 
         </div>
 
+        <!-- ================= ALERT MESSAGES ================= -->
 
-        <!-- SUMMARY -->
+        <% if ("updated".equals(message)) { %>
+
+            <div class="alert success">
+                Policy information updated successfully.
+            </div>
+
+        <% } else if ("failed".equals(message)) { %>
+
+            <div class="alert error">
+                Unable to process the requested action.
+            </div>
+
+        <% } %>
+
+        <!-- ================= SUMMARY CARDS ================= -->
 
         <div class="summary">
 
             <div class="summary-card total">
+
                 <span>Total Policies</span>
+
                 <h3><%= totalPolicies %></h3>
+
             </div>
 
             <div class="summary-card active-card">
+
                 <span>Active Policies</span>
+
                 <h3><%= activePolicies %></h3>
+
             </div>
 
             <div class="summary-card expired-card">
+
                 <span>Expired Policies</span>
+
                 <h3><%= expiredPolicies %></h3>
+
             </div>
 
             <div class="summary-card cancelled-card">
+
                 <span>Cancelled Policies</span>
+
                 <h3><%= cancelledPolicies %></h3>
+
             </div>
 
         </div>
 
-
-        <!-- POLICY TABLE -->
+        <!-- ================= POLICY TABLE PANEL ================= -->
 
         <div class="panel">
 
@@ -682,40 +755,50 @@ td {
 
                 <h3>Registered Policies</h3>
 
+                <!-- SEARCH AND FILTER -->
+
                 <form class="filters"
                       method="get"
                       action="<%= ctx %>/AdminPolicies">
 
-                    <input type="text"
-                           name="search"
-                           placeholder="Search policy, customer, email or mobile"
-                           value="<%= esc(search) %>">
+                    <input
+                        type="text"
+                        name="search"
+                        placeholder="Search policy, customer, email or mobile"
+                        value="<%= esc(search) %>"
+                    >
 
                     <select name="status">
 
                         <option value="ALL"
-                            <%= "ALL".equals(selectedStatus) ? "selected" : "" %>>
+                            <%= "ALL".equals(selectedStatus)
+                                ? "selected" : "" %>>
                             All Status
                         </option>
 
                         <option value="ACTIVE"
-                            <%= "ACTIVE".equals(selectedStatus) ? "selected" : "" %>>
+                            <%= "ACTIVE".equals(selectedStatus)
+                                ? "selected" : "" %>>
                             Active
                         </option>
 
                         <option value="EXPIRED"
-                            <%= "EXPIRED".equals(selectedStatus) ? "selected" : "" %>>
+                            <%= "EXPIRED".equals(selectedStatus)
+                                ? "selected" : "" %>>
                             Expired
                         </option>
 
                         <option value="CANCELLED"
-                            <%= "CANCELLED".equals(selectedStatus) ? "selected" : "" %>>
+                            <%= "CANCELLED".equals(selectedStatus)
+                                ? "selected" : "" %>>
                             Cancelled
                         </option>
 
                     </select>
 
-                    <button type="submit">Search / Filter</button>
+                    <button type="submit">
+                        Search / Filter
+                    </button>
 
                     <a class="clear-link"
                        href="<%= ctx %>/AdminPolicies">
@@ -726,6 +809,7 @@ td {
 
             </div>
 
+            <!-- ================= TABLE ================= -->
 
             <div class="table-wrap">
 
@@ -747,7 +831,6 @@ td {
 
                     </thead>
 
-
                     <tbody>
 
                     <%
@@ -755,24 +838,46 @@ td {
 
                             for (Map<String, Object> policy : policies) {
 
-                                Object policyId = policy.get("policyId");
-                                Object policyNumber = policy.get("policyNumber");
-                                Object customerName = policy.get("customerName");
-                                Object email = policy.get("email");
-                                Object mobile = policy.get("mobile");
-                                Object policyType = policy.get("policyType");
-                                Object premiumAmount = policy.get("premiumAmount");
-                                Object nextPremiumDate = policy.get("nextPremiumDate");
-                                Object createdAt = policy.get("createdAt");
-                                Object status = policy.get("status");
+                                Object policyId =
+                                    policy.get("policyId");
+
+                                Object policyNumber =
+                                    policy.get("policyNumber");
+
+                                Object customerName =
+                                    policy.get("customerName");
+
+                                Object email =
+                                    policy.get("email");
+
+                                Object mobile =
+                                    policy.get("mobile");
+
+                                Object policyType =
+                                    policy.get("policyType");
+
+                                Object premiumAmount =
+                                    policy.get("premiumAmount");
+
+                                Object nextPremiumDate =
+                                    policy.get("nextPremiumDate");
+
+                                Object createdAt =
+                                    policy.get("createdAt");
+
+                                Object status =
+                                    policy.get("status");
 
                                 String statusValue =
-                                    status == null ? "" : status.toString();
+                                    status == null
+                                    ? ""
+                                    : status.toString();
                     %>
 
                         <tr>
 
                             <td>
+
                                 <div class="policy-number">
                                     <%= esc(policyNumber) %>
                                 </div>
@@ -780,36 +885,55 @@ td {
                                 <div class="policy-id">
                                     ID: <%= esc(policyId) %>
                                 </div>
+
                             </td>
 
                             <td>
+
                                 <div class="customer-name">
                                     <%= esc(customerName) %>
                                 </div>
+
                             </td>
-
-                            <td><%= esc(email) %></td>
-
-                            <td><%= esc(mobile) %></td>
-
-                            <td><%= esc(policyType) %></td>
-
-                            <td class="premium">
-                                ₹<%= premiumAmount == null
-                                    ? "0.00" : esc(premiumAmount) %>
-                            </td>
-
-                            <td><%= esc(nextPremiumDate) %></td>
 
                             <td>
+                                <%= esc(email) %>
+                            </td>
+
+                            <td>
+                                <%= esc(mobile) %>
+                            </td>
+
+                            <td>
+                                <%= esc(policyType) %>
+                            </td>
+
+                            <td class="premium">
+
+                                ₹<%= premiumAmount == null
+                                    ? "0.00"
+                                    : esc(premiumAmount) %>
+
+                            </td>
+
+                            <td>
+                                <%= esc(nextPremiumDate) %>
+                            </td>
+
+                            <td>
+
                                 <span class="status <%= esc(statusValue) %>">
                                     <%= esc(statusValue) %>
                                 </span>
+
                             </td>
 
                             <td>
+
                                 <%= createdAt == null
-                                    ? "—" : esc(createdAt.toString()) %>
+                                    ? "—"
+                                    : esc(createdAt.toString()) %>
+
                             </td>
 
                         </tr>
@@ -821,9 +945,11 @@ td {
                     %>
 
                         <tr>
+
                             <td colspan="9" class="empty">
                                 No policy records found.
                             </td>
+
                         </tr>
 
                     <%
@@ -842,19 +968,24 @@ td {
 
 </div>
 
+<!-- ================= PROFILE DROPDOWN SCRIPT ================= -->
 
 <script>
 
-const profile = document.getElementById("profileArea");
+const adminArea = document.getElementById("adminArea");
 
-profile.addEventListener("click", function(event) {
+adminArea.addEventListener("click", function(event) {
     event.stopPropagation();
-    profile.classList.toggle("active");
+    adminArea.classList.toggle("active");
 });
 
-document.addEventListener("click", function(event) {
-    if (!profile.contains(event.target)) {
-        profile.classList.remove("active");
+document.addEventListener("click", function() {
+    adminArea.classList.remove("active");
+});
+
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") {
+        adminArea.classList.remove("active");
     }
 });
 

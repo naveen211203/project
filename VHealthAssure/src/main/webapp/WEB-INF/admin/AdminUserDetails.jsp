@@ -581,11 +581,11 @@ main {
 
         <div class="dropdown">
 
-            <a href="#">
+            <a href="AdminProfile">
                 Admin Profile
             </a>
 
-            <a href="#">
+            <a href="AdminChangePassword">
                 Change Password
             </a>
 

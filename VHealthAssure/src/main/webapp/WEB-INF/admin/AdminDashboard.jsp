@@ -448,8 +448,8 @@ footer {
         <div class="admin-name"><%= adminName %> ▾</div>
 
         <div class="dropdown">
-            <a href="#">Admin Profile</a>
-            <a href="#">Change Password</a>
+            <a href="AdminProfile">Admin Profile</a>
+            <a href="AdminChangePassword">Change Password</a>
             <a href="<%= ctx %>/logout" class="logout">Logout</a>
         </div>
     </div>

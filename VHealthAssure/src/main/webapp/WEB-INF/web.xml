@@ -106,6 +106,48 @@
   	<description></description>
   	<servlet-class>com.VHealthAssure.Controller.AdminPoliciesServlet</servlet-class>
   </servlet>
+  <servlet>
+  	<servlet-name>AdminClaimsServlet</servlet-name>
+  	<display-name>AdminClaimsServlet</display-name>
+  	<description></description>
+  	<servlet-class>com.VHealthAssure.Controller.AdminClaimsServlet</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>AdminKycServlet</servlet-name>
+  	<display-name>AdminKycServlet</display-name>
+  	<description></description>
+  	<servlet-class>com.VHealthAssure.Controller.AdminKycServlet</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>AdminKycDocumentServlet</servlet-name>
+  	<display-name>AdminKycDocumentServlet</display-name>
+  	<description></description>
+  	<servlet-class>com.VHealthAssure.Controller.AdminKycDocumentServlet</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>AdminHospitalsServlet</servlet-name>
+  	<display-name>AdminHospitalsServlet</display-name>
+  	<description></description>
+  	<servlet-class>com.VHealthAssure.Controller.AdminHospitalsServlet</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>AdminSupportServlet</servlet-name>
+  	<display-name>AdminSupportServlet</display-name>
+  	<description></description>
+  	<servlet-class>com.VHealthAssure.Controller.AdminSupportServlet</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>AdminProfileServlet</servlet-name>
+  	<display-name>AdminProfileServlet</display-name>
+  	<description></description>
+  	<servlet-class>com.VHealthAssure.Controller.AdminProfileServlet</servlet-class>
+  </servlet>
+  <servlet>
+  	<servlet-name>AdminChangePasswordServlet</servlet-name>
+  	<display-name>AdminChangePasswordServlet</display-name>
+  	<description></description>
+  	<servlet-class>com.VHealthAssure.Controller.AdminChangePasswordServlet</servlet-class>
+  </servlet>
   <servlet-mapping>
   	<servlet-name>RegistrationServlet</servlet-name>
   	<url-pattern>/RegistrationServlet</url-pattern>
@@ -173,5 +215,33 @@
   <servlet-mapping>
   	<servlet-name>AdminPoliciesServlet</servlet-name>
   	<url-pattern>/AdminPoliciesServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>AdminClaimsServlet</servlet-name>
+  	<url-pattern>/AdminClaimsServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>AdminKycServlet</servlet-name>
+  	<url-pattern>/AdminKycServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>AdminKycDocumentServlet</servlet-name>
+  	<url-pattern>/AdminKycDocumentServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>AdminHospitalsServlet</servlet-name>
+  	<url-pattern>/AdminHospitalsServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>AdminSupportServlet</servlet-name>
+  	<url-pattern>/AdminSupportServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>AdminProfileServlet</servlet-name>
+  	<url-pattern>/AdminProfileServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>AdminChangePasswordServlet</servlet-name>
+  	<url-pattern>/AdminChangePasswordServlet</url-pattern>
   </servlet-mapping>
 </web-app>
