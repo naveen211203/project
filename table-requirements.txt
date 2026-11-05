@@ -1,0 +1,217 @@
+VHealthAssure - InsuranceDB SQL Setup Script
+============================================
+This file contains executable MySQL statements to create the InsuranceDB
+database and its eight tables, including their columns, keys, indexes,
+foreign keys, constraints, defaults, and ENUM definitions.
+
+Run this file in MySQL Workbench on the target laptop.
+It creates the schema only; it does not insert existing customer/admin data.
+The SQL below is intended to be executed as a complete script.
+
+------------------------------------------------------------
+EXECUTABLE SQL
+------------------------------------------------------------
+
+-- VHealthAssure - InsuranceDB schema setup
+-- Generated from the supplied MySQL 8.0.43 dump.
+-- Contains database/table definitions only; no INSERT statements or personal data.
+-- Run this script in MySQL Workbench on the target laptop.
+
+CREATE DATABASE IF NOT EXISTS `insurancedb`
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE `insurancedb`;
+
+-- Disable FK checks while creating the schema in dependency-safe order.
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- Table: admins
+CREATE TABLE IF NOT EXISTS `admins` (
+  `AdminId` bigint NOT NULL AUTO_INCREMENT,
+  `FullName` varchar(100) NOT NULL,
+  `Email` varchar(100) NOT NULL,
+  `Mobile` varchar(15) NOT NULL,
+  `Password` varchar(255) NOT NULL,
+  `Role` varchar(20) NOT NULL DEFAULT 'ADMIN',
+  `Status` varchar(20) NOT NULL DEFAULT 'ACTIVE',
+  `CreatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastLogin` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`AdminId`),
+  UNIQUE KEY `Email` (`Email`),
+  UNIQUE KEY `Mobile` (`Mobile`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Table: hospitals
+CREATE TABLE IF NOT EXISTS `hospitals` (
+  `HospitalId` int NOT NULL AUTO_INCREMENT,
+  `HospitalName` varchar(150) NOT NULL,
+  `Address` varchar(255) NOT NULL,
+  `City` varchar(100) NOT NULL,
+  `State` varchar(100) NOT NULL,
+  `ContactNumber` varchar(20) DEFAULT NULL,
+  `Email` varchar(150) DEFAULT NULL,
+  `NetworkStatus` enum('ACTIVE','INACTIVE') DEFAULT 'ACTIVE',
+  `CreatedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`HospitalId`)
+) ENGINE=InnoDB AUTO_INCREMENT=156 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Table: users
+CREATE TABLE IF NOT EXISTS `users` (
+  `UserId` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `FullName` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `Email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `Mobile` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `Password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `GovIdType` enum('AADHAAR','PAN','DL','PASSPORT','VOTER') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `GovIdNumber` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `DateOfBirth` date DEFAULT NULL,
+  `Gender` enum('MALE','FEMALE','OTHER') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `AddressLine1` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `AddressLine2` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `City` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `State` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `PostalCode` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Country` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `NomineeName` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `NomineeRelation` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `NomineeDob` date DEFAULT NULL,
+  `NomineeShare` decimal(5,2) DEFAULT '100.00',
+  `EmploymentStatus` enum('SALARIED','SELF_EMPLOYED','UNEMPLOYED','RETIRED') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `AnnualIncome` decimal(14,2) DEFAULT '0.00',
+  `Occupation` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `Company` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `EmailVerified` tinyint(1) DEFAULT '0',
+  `MobileVerified` tinyint(1) DEFAULT '0',
+  `KycStatus` enum('NOT VERIFIED','PENDING','VERIFIED','REJECTED') COLLATE utf8mb4_unicode_ci DEFAULT 'NOT VERIFIED',
+  `Role` enum('USER','AGENT','ADMIN') COLLATE utf8mb4_unicode_ci DEFAULT 'USER',
+  `Status` enum('ACTIVE','INACTIVE','SUSPENDED') COLLATE utf8mb4_unicode_ci DEFAULT 'ACTIVE',
+  `CreatedAt` datetime DEFAULT CURRENT_TIMESTAMP,
+  `UpdatedAt` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`UserId`),
+  UNIQUE KEY `uq_users_email` (`Email`),
+  UNIQUE KEY `uq_users_mobile` (`Mobile`),
+  UNIQUE KEY `GovIdNumber` (`GovIdNumber`),
+  KEY `idx_gov_id` (`GovIdType`,`GovIdNumber`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Table: claims
+CREATE TABLE IF NOT EXISTS `claims` (
+  `ClaimId` bigint NOT NULL AUTO_INCREMENT,
+  `ClaimNumber` varchar(30) NOT NULL,
+  `UserId` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ClaimDate` date NOT NULL,
+  `Status` enum('APPROVED','UNDER_REVIEW','REJECTED') DEFAULT 'UNDER_REVIEW',
+  `CreatedAt` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`ClaimId`),
+  UNIQUE KEY `ClaimNumber` (`ClaimNumber`),
+  KEY `fk_claims_user` (`UserId`),
+  CONSTRAINT `fk_claims_user` FOREIGN KEY (`UserId`) REFERENCES `users` (`UserId`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Table: claimdata
+CREATE TABLE IF NOT EXISTS `claimdata` (
+  `patientName` varchar(100) DEFAULT NULL,
+  `age` int DEFAULT NULL,
+  `dateofBirth` date DEFAULT NULL,
+  `gender` varchar(100) DEFAULT NULL,
+  `contactNumber` varchar(200) DEFAULT NULL,
+  `emailID` varchar(200) DEFAULT NULL,
+  `address` varchar(200) DEFAULT NULL,
+  `insuranceCompanyName` varchar(100) DEFAULT NULL,
+  `policyNumber` varchar(50) DEFAULT NULL,
+  `healthCardNumber` varchar(50) DEFAULT NULL,
+  `policyholderName` varchar(100) DEFAULT NULL,
+  `hospitalName` varchar(100) DEFAULT NULL,
+  `registrationNumber` varchar(50) DEFAULT NULL,
+  `hospitalAddress` varchar(250) DEFAULT NULL,
+  `hospitalContactNumber` varchar(100) DEFAULT NULL,
+  `hospitalEmail` varchar(200) DEFAULT NULL,
+  `dateandTimeofAdmission` datetime DEFAULT NULL,
+  `dateandTimeofDischarge` datetime DEFAULT NULL,
+  `typeofAdmission` varchar(200) DEFAULT NULL,
+  `diagnosis` varchar(200) DEFAULT NULL,
+  `typeofTreatment` varchar(200) DEFAULT NULL,
+  `surgeryName` varchar(250) DEFAULT NULL,
+  `surgeryDate` date DEFAULT NULL,
+  `treatingDoctorName` varchar(100) DEFAULT NULL,
+  `totalHospitalBillAmount` decimal(10,2) DEFAULT NULL,
+  `amountClaimed` decimal(10,2) DEFAULT NULL,
+  `accountHolderName` varchar(100) DEFAULT NULL,
+  `bankName` varchar(100) DEFAULT NULL,
+  `accountNumber` varchar(50) DEFAULT NULL,
+  `iFSCCode` varchar(30) DEFAULT NULL,
+  `branchName` varchar(100) DEFAULT NULL,
+  `hospitalFinalBill` varchar(255) DEFAULT NULL,
+  `detailedBill` varchar(255) DEFAULT NULL,
+  `dischargeSummary` varchar(255) DEFAULT NULL,
+  `medicalReports` varchar(255) DEFAULT NULL,
+  `pharmacyBills` varchar(255) DEFAULT NULL,
+  `fIRAccidentReport` varchar(255) DEFAULT NULL,
+  `iDProof` varchar(255) DEFAULT NULL,
+  `insuranceCardTPACard` varchar(255) DEFAULT NULL,
+  `declarationcheckbox` varchar(20) DEFAULT NULL,
+  `patientGuardianSignature` varchar(255) DEFAULT NULL,
+  `hospitalSealandDoctorSignature` varchar(255) DEFAULT NULL,
+  `ClaimId` bigint NOT NULL,
+  UNIQUE KEY `uq_claimdata_claimid` (`ClaimId`),
+  CONSTRAINT `fk_claimdata_claims` FOREIGN KEY (`ClaimId`) REFERENCES `claims` (`ClaimId`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Table: policies
+CREATE TABLE IF NOT EXISTS `policies` (
+  `PolicyId` bigint NOT NULL AUTO_INCREMENT,
+  `PolicyNumber` varchar(30) NOT NULL,
+  `UserId` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `PolicyType` varchar(100) NOT NULL,
+  `Status` enum('ACTIVE','EXPIRED','CANCELLED') DEFAULT 'ACTIVE',
+  `PremiumAmount` decimal(10,2) NOT NULL,
+  `NextPremiumDate` date NOT NULL,
+  `CreatedAt` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`PolicyId`),
+  UNIQUE KEY `PolicyNumber` (`PolicyNumber`),
+  KEY `fk_policies_user` (`UserId`),
+  CONSTRAINT `fk_policies_user` FOREIGN KEY (`UserId`) REFERENCES `users` (`UserId`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Table: kyc_documents
+CREATE TABLE IF NOT EXISTS `kyc_documents` (
+  `KycId` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `UserId` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `GovIdType` enum('AADHAAR','PAN','DL','PASSPORT','VOTER') NOT NULL,
+  `GovIdNumber` varchar(64) NOT NULL,
+  `DocumentPath` varchar(255) NOT NULL,
+  `DocumentType` varchar(20) NOT NULL,
+  `AttemptNumber` int NOT NULL,
+  `Status` enum('PENDING','VERIFIED','REJECTED') NOT NULL DEFAULT 'PENDING',
+  `RejectionReason` varchar(255) DEFAULT NULL,
+  `UploadedAt` datetime DEFAULT CURRENT_TIMESTAMP,
+  `ReviewedAt` datetime DEFAULT NULL,
+  `ReviewedBy` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`KycId`),
+  KEY `idx_kyc_user` (`UserId`),
+  KEY `idx_kyc_status` (`Status`),
+  CONSTRAINT `fk_kyc_user` FOREIGN KEY (`UserId`) REFERENCES `users` (`UserId`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Table: support_tickets
+CREATE TABLE IF NOT EXISTS `support_tickets` (
+  `TicketId` int NOT NULL AUTO_INCREMENT,
+  `TicketNumber` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `UserId` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `Category` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `Subject` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `Message` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `AdminResponse` text COLLATE utf8mb4_unicode_ci,
+  `Status` enum('OPEN','IN_PROGRESS','RESOLVED','CLOSED') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'OPEN',
+  `CreatedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `UpdatedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`TicketId`),
+  UNIQUE KEY `TicketNumber` (`TicketNumber`),
+  KEY `fk_support_user` (`UserId`),
+  KEY `idx_support_status` (`Status`),
+  KEY `idx_support_created` (`CreatedAt`),
+  CONSTRAINT `fk_support_user` FOREIGN KEY (`UserId`) REFERENCES `users` (`UserId`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+SET FOREIGN_KEY_CHECKS = 1;
